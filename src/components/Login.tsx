@@ -24,6 +24,7 @@ function Login() {
     email: string;
     password: string;
     team: string;
+    nickName:string;
   };
 
   let userList: User[] = [];
@@ -32,9 +33,9 @@ function Login() {
   const setUserList = async () => {
     const users = await getDocs(collection(db, "account"));
     users.docs.map((doc) => {
-      const { email, password, team } = doc.data();
+      const { email, password, team, nickName } = doc.data();
       if (Array.isArray(userList)) {
-        userList.push({ email, password, team });
+        userList.push({ email, password, team, nickName });
       }
     });
   };

@@ -1,18 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 import { useRecoilState } from "recoil";
 import { isLoginAtom } from "../../atoms";
 
-const Header: React.FC<{ isLogin: Boolean }> = (props) => {
+function Header() {
   // const user = JSON.parse(sessionStorage.getItem("user") || "null");/
-  const [ isLogin, setIsLogin ] = useRecoilState(isLoginAtom);
+  const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
 
   //로그아웃과정, Recoil값 false로 바꿔주고, session에 저장된 값 삭제
   const logOutHandler = () => {
     sessionStorage.removeItem("user");
     setIsLogin(false);
-  }
+  };
+
+  //새로고침시에도 로그인 유지하게 끔 설정
+  useEffect(() => {
+    judgeUser();
+  }, []);
+  const judgeUser = () => {
+    const isSession = sessionStorage.getItem("user");
+    if (isSession) {
+      setIsLogin(true);
+    } else {
+      setIsLogin(false);
+    }
+  };
 
   return (
     <HeaderDiv>
@@ -21,26 +34,29 @@ const Header: React.FC<{ isLogin: Boolean }> = (props) => {
           <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
         </Link>
         <input type="text" className="search" placeholder="검색" />
-        {!props.isLogin ? (
+        {!isLogin ? (
           <div className="user-nav">
             <Link to={"/login"}>로그인</Link>
             <Link to={"/signup"}>회원가입</Link>
           </div>
         ) : (
           <div className="user-nav">
-            <Link to={"/"} onClick={logOutHandler}>로그아웃</Link>
+            <Link to={"/"} onClick={logOutHandler}>
+              로그아웃
+            </Link>
             <Link to={"/mypage"}>마이페이지</Link>
           </div>
         )}
       </header>
     </HeaderDiv>
   );
-};
+}
 
 export default Header;
 
 const HeaderDiv = styled.div`
   padding-top: 40px;
+  margin-bottom: 80px;
   header {
     display: flex;
     justify-content: space-between;
@@ -70,11 +86,11 @@ const HeaderDiv = styled.div`
       outline: none;
     }
   }
-  .user-nav{
+  .user-nav {
     display: flex;
-    width: 240px;
+    width: 280px;
     height: 40px;
-    a{
+    a {
       width: 50%;
       height: 100%;
       line-height: 40px;
@@ -82,13 +98,13 @@ const HeaderDiv = styled.div`
       text-decoration: none;
       border-radius: 7px;
       transition: 300ms;
-      &:hover{
+      &:hover {
         background-color: white;
         color: black;
       }
-      &:first-child{
+      &:first-child {
         position: relative;
-        &::after{
+        &::after {
           content: "";
           position: absolute;
           width: 1px;
