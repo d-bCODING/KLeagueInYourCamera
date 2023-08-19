@@ -33,7 +33,12 @@ function Header() {
         <Link to={"/"} className="main-Logo">
           <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
         </Link>
-        <input type="text" className="search" placeholder="검색" />
+        <form action="" className="search-form">
+          <input type="text" className="search" placeholder="검색" />
+          <button>
+            <img src="/src/assets/searchBtn.png" alt="검색" />
+          </button>
+        </form>
         {!isLogin ? (
           <div className="user-nav">
             <Link to={"/login"}>로그인</Link>
@@ -70,20 +75,52 @@ const HeaderDiv = styled.div`
       width: 100%;
     }
   }
-  .search {
+  .search-form{
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    display: flex;
     width: 800px;
     height: 50px;
-    line-height: 50px;
-    text-align: center;
-    border-radius: 10px;
-    font-size: 18px;
-    border: none;
-    &:focus {
-      outline: none;
+    .search {
+      width: 92%;
+      height: 100%;
+      line-height: 50px;
+      text-align: center;
+      border-radius: 10px 0 0 10px;
+      font-size: 18px;
+      border: none;
+      box-sizing: border-box;
+      &:focus {
+        outline: none;
+      }
+    }
+    button{
+      width: 8%;
+      height: 100%;
+      border: none;
+      box-sizing: border-box;
+      border-radius: 0 10px 10px 0;
+      background-color: white;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      &::before{
+        content: "";
+        position: absolute;
+        height: 60%;
+        width: 2px;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        background-color: #aaaaaa;
+      }
+      img{
+        width: 50%;
+      }
     }
   }
   .user-nav {
