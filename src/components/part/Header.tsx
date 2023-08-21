@@ -1,13 +1,17 @@
-import React, { useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { useRecoilState } from "recoil";
 import { isLoginAtom } from "../../atoms";
+import { useSetRecoilState } from "recoil";
+import { searchKeywordAtom } from "../../atoms";
 
 function Header() {
   // const user = JSON.parse(sessionStorage.getItem("user") || "null");/
   const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
-
+  const [imgSrc, setImgSrc] = useState("/src/assets/searchBtnStop.png")
+  const [searchKeyword, setSearchKeyword] = useState("");
+ 
   //로그아웃과정, Recoil값 false로 바꿔주고, session에 저장된 값 삭제
   const logOutHandler = () => {
     sessionStorage.removeItem("user");
@@ -17,6 +21,7 @@ function Header() {
   //새로고침시에도 로그인 유지하게 끔 설정
   useEffect(() => {
     judgeUser();
+    setSearchKeyword(" ");
   }, []);
   const judgeUser = () => {
     const isSession = sessionStorage.getItem("user");
@@ -27,16 +32,40 @@ function Header() {
     }
   };
 
+  const makeBallMoving = () => {
+    setImgSrc("/src/assets/searchBtnMoving.gif")
+  }
+
+  const makeBallStop = () => {
+    setImgSrc("/src/assets/searchBtnStop.png");
+  }
+
+  const setKeyword = useSetRecoilState(searchKeywordAtom)
+  const search = (e:React.FormEvent) => {
+    e.preventDefault();
+    setKeyword(searchKeyword);
+  }
+  
+  const searchKeywordHandler = (e:React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setSearchKeyword(e.target.value);
+  }
+
+  const resetKeyword = () => {
+    setKeyword("");
+  }
+  
+
   return (
     <HeaderDiv>
       <header>
-        <Link to={"/"} className="main-Logo">
+        <Link onClick={resetKeyword} to={"/"} className="main-Logo">
           <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
         </Link>
         <form action="" className="search-form">
-          <input type="text" className="search" placeholder="검색" />
-          <button>
-            <img src="/src/assets/searchBtn.png" alt="검색" />
+          <input onChange={searchKeywordHandler} type="text" className="search" placeholder="검색" />
+          <button onClick={search} onMouseOver={makeBallMoving} onMouseLeave={makeBallStop}>
+            <img src={imgSrc} alt="검색" />
           </button>
         </form>
         {!isLogin ? (

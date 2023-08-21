@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { styled } from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { isLoginAtom } from "../atoms";
-import { getDocs, collection } from "firebase/firestore/lite";
-import { db } from "../firebase";
+import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore/lite";
 
-// const MainBoard: React.FC<{isLogin : Boolean}> = (props) => {
-function MainBoard() {
+const MainBoard: React.FC<{posts : QuerySnapshot | null}> = (props) => {
+// function MainBoard() {/
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState<Post[]>([]);
   //글쓰기 전 로그인 여부 확인
@@ -34,26 +33,29 @@ function MainBoard() {
     time: string;
   };
 
+  //db에 저장된 게시물들이 모두 포함될 배열
   let allPost: Post[] = [];
   //post 목록 가져와서 각 post 배열에 저장
   async function getAllPost() {
-    const posts = await getDocs(collection(db, "post"));
-    posts.forEach((el) => {
-      const data = el.data();
-      const post: Post = {
-        comment: data.comment,
-        contents: data.contents,
-        like: data.like,
-        likeUser: data.likeUser,
-        nickName: data.nickName,
-        team: data.team,
-        title: data.title,
-        videoURL: data.videoURL,
-        view: data.view,
-        time: data.time,
-      };
-      allPost = [...allPost, post];
-    });
+    const posts = props.posts;
+    if (posts) {
+      posts.forEach((el:QueryDocumentSnapshot) => {
+        const data = el.data();
+        const post: Post = {
+          comment: data.comment,
+          contents: data.contents,
+          like: data.like,
+          likeUser: data.likeUser,
+          nickName: data.nickName,
+          team: data.team,
+          title: data.title,
+          videoURL: data.videoURL,
+          view: data.view,
+          time: data.time,
+        };
+        allPost = [...allPost, post];
+      });
+    }
     //가져온 게시물들을 최신순으로 위에서부터 정렬
     console.log("정렬 전",allPost);
     const sortedAllPost = allPost.sort(
@@ -62,7 +64,6 @@ function MainBoard() {
         new Date(a.time as string).getTime()
     );
     console.log("정렬 후",sortedAllPost);
-    
     setResult(sortedAllPost);
     setIsLoading(true);
   }
@@ -71,18 +72,6 @@ function MainBoard() {
     getAllPost();
   }, []);
 
-  const arr = [
-    { date: "2023. 08. 18. 22:10:47" },
-    { date: "2023. 08. 18. 22:10:45" },
-    { date: "2023. 08. 18. 22:10:48" },
-  ];
-  const sortedArr = arr.sort(
-    (a, b) =>
-      new Date(b.date as string).getTime() -
-      new Date(a.date as string).getTime()
-  );
-  console.log(sortedArr);
-  
   return (
     <MaingBoardDiv>
       <div className="board-nav">
