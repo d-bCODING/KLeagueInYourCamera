@@ -9,4 +9,3 @@ export const searchKeywordAtom = atom({
   key: "searchKeyword",
   default: "",
 });
-

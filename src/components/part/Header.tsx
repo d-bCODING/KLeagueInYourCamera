@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { styled } from "styled-components";
 import { useRecoilState } from "recoil";
 import { isLoginAtom } from "../../atoms";
@@ -9,9 +9,9 @@ import { searchKeywordAtom } from "../../atoms";
 function Header() {
   // const user = JSON.parse(sessionStorage.getItem("user") || "null");/
   const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
-  const [imgSrc, setImgSrc] = useState("/src/assets/searchBtnStop.png")
+  const [imgSrc, setImgSrc] = useState("/src/assets/searchBtnStop.png");
   const [searchKeyword, setSearchKeyword] = useState("");
- 
+
   //로그아웃과정, Recoil값 false로 바꿔주고, session에 저장된 값 삭제
   const logOutHandler = () => {
     sessionStorage.removeItem("user");
@@ -33,28 +33,27 @@ function Header() {
   };
 
   const makeBallMoving = () => {
-    setImgSrc("/src/assets/searchBtnMoving.gif")
-  }
+    setImgSrc("/src/assets/searchBtnMoving.gif");
+  };
 
   const makeBallStop = () => {
     setImgSrc("/src/assets/searchBtnStop.png");
-  }
+  };
 
-  const setKeyword = useSetRecoilState(searchKeywordAtom)
-  const search = (e:React.FormEvent) => {
+  const setKeyword = useSetRecoilState(searchKeywordAtom);
+  const search = (e: React.FormEvent) => {
     e.preventDefault();
     setKeyword(searchKeyword);
-  }
-  
-  const searchKeywordHandler = (e:React.ChangeEvent<HTMLInputElement>) => {
+  };
+
+  const searchKeywordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setSearchKeyword(e.target.value);
-  }
+  };
 
   const resetKeyword = () => {
     setKeyword("");
-  }
-  
+  };
 
   return (
     <HeaderDiv>
@@ -63,8 +62,17 @@ function Header() {
           <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
         </Link>
         <form action="" className="search-form">
-          <input onChange={searchKeywordHandler} type="text" className="search" placeholder="검색" />
-          <button onClick={search} onMouseOver={makeBallMoving} onMouseLeave={makeBallStop}>
+          <input
+            onChange={searchKeywordHandler}
+            type="text"
+            className="search"
+            placeholder="검색"
+          />
+          <button
+            onClick={search}
+            onMouseOver={makeBallMoving}
+            onMouseLeave={makeBallStop}
+          >
             <img src={imgSrc} alt="검색" />
           </button>
         </form>
@@ -104,7 +112,7 @@ const HeaderDiv = styled.div`
       width: 100%;
     }
   }
-  .search-form{
+  .search-form {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -125,7 +133,7 @@ const HeaderDiv = styled.div`
         outline: none;
       }
     }
-    button{
+    button {
       width: 8%;
       height: 100%;
       border: none;
@@ -137,7 +145,7 @@ const HeaderDiv = styled.div`
       justify-content: center;
       align-items: center;
       position: relative;
-      &::before{
+      &::before {
         content: "";
         position: absolute;
         height: 60%;
@@ -147,7 +155,7 @@ const HeaderDiv = styled.div`
         transform: translateY(-50%);
         background-color: #aaaaaa;
       }
-      img{
+      img {
         width: 50%;
       }
     }

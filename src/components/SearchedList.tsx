@@ -1,59 +1,32 @@
 import React, { useState } from "react";
 import { useRecoilValue } from "recoil";
 import { searchKeywordAtom } from "../atoms";
-import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore/lite";
 import { styled } from "styled-components";
+import { useNavigate } from "react-router-dom";
 
-const SearchedList: React.FC<{ posts: QuerySnapshot | null }> = (props) => {
-  const [showedPageNum, setShowedPageNum] = useState<Number>(1);
+const SearchedList: React.FC<{ posts: Post[] | null }> = (props) => {
   // function SearchedList() {
-  //사용자가 입력한 검색 키워드
-  console.log(props.posts);
+  const [showedPageNum, setShowedPageNum] = useState<Number>(1);
+  console.log("받아온 것", props.posts);
   const posts = props.posts;
+  //사용자가 입력한 검색 키워드
+  //쿼리 스트링으로 나중에 구현해봄이 적절할 듯? 키워드를 아톰으로 관리하는 것 보단??
   const searchKeyword = useRecoilValue(searchKeywordAtom);
   console.log("검색 키워드", searchKeyword);
-
-  type Post = {
-    comment: string[];
-    contents: string;
-    like: number;
-    likeUser: string[];
-    nickName: string;
-    team: string;
-    title: string;
-    videoURL: string;
-    view: number;
-    time: string;
-    num?: number;
-    pageNum?: number;
-  };
 
   //검색키워드와 관련한 게시물이 들어올 배열
   let filteredPost: Post[] = [];
   //게시물들 하나하나씩 뜯어보는 과정
   if (posts) {
-    posts.forEach((el: QueryDocumentSnapshot) => {
-      const data = el.data();
-      const post: Post = {
-        comment: data.comment,
-        contents: data.contents,
-        like: data.like,
-        likeUser: data.likeUser,
-        nickName: data.nickName,
-        team: data.team,
-        title: data.title,
-        videoURL: data.videoURL,
-        view: data.view,
-        time: data.time,
-      };
+    posts.forEach((el) => {
       //제목이나 내용에 검색 키워드가 포함되어 있을 경우에만 filteredPost에 포함
       if (
-        post.title.indexOf(searchKeyword) !== -1 ||
-        post.contents.indexOf(searchKeyword) !== -1
+        el.title.indexOf(searchKeyword) !== -1 ||
+        el.contents.indexOf(searchKeyword) !== -1
       ) {
-        filteredPost = [post, ...filteredPost];
+        filteredPost = [el, ...filteredPost];
       } else if (searchKeyword === " ") {
-        filteredPost = [post, ...filteredPost];
+        filteredPost = [el, ...filteredPost];
       }
     });
   }
@@ -65,7 +38,7 @@ const SearchedList: React.FC<{ posts: QuerySnapshot | null }> = (props) => {
       new Date(a.time as string).getTime()
   );
   let count = sortedAllPost.length;
-  sortedAllPost.forEach((el) => {
+  sortedAllPost.map((el) => {
     el.num = count;
     count--;
   });
@@ -101,7 +74,15 @@ const SearchedList: React.FC<{ posts: QuerySnapshot | null }> = (props) => {
   };
 
   //페이지에 맞는 번호 보유하고 있는 게시물들만 가져오기
-  const resultPosts = filteredPost.filter((obj) => obj.pageNum === showedPageNum);
+  const resultPosts = filteredPost.filter(
+    (obj) => obj.pageNum === showedPageNum
+  );
+
+  //상세페이지 이동 함수
+  const navigate = useNavigate();
+  const goDetailInfo = (el: Post) => {
+    navigate(`/postdetail/${el.postId}`, { state: el });
+  };
 
   return (
     <SearchListDiv>
@@ -111,7 +92,11 @@ const SearchedList: React.FC<{ posts: QuerySnapshot | null }> = (props) => {
       </div>
       <ul className="post-list">
         {resultPosts.map((el) => (
-          <li key={el.num} className="writing post">
+          <li
+            onClick={() => goDetailInfo(el)}
+            key={el.num}
+            className="writing post"
+          >
             <div className="info">
               <div className="front">
                 <span className="num">{el.num}</span>
@@ -130,7 +115,9 @@ const SearchedList: React.FC<{ posts: QuerySnapshot | null }> = (props) => {
           //React에서는 JSX 요소 내부의 구성 요소 또는 문자열만 렌더링할 수 있습니다.
           //TypeScript는 구성 요소나 문자열이 아니기 때문에 숫자를 렌더링할 수 없다고 말합니다.
           //하여 숫자를 스트링 형식으로 바꿔주면 해결된다!
-          <span key={el.toString()} onClick={() => showPage(el)}>{el.toString()}</span>
+          <span key={el.toString()} onClick={() => showPage(el)}>
+            {el.toString()}
+          </span>
         ))}
       </div>
     </SearchListDiv>
@@ -205,3 +192,20 @@ const SearchListDiv = styled.div`
     }
   }
 `;
+
+type Post = {
+  comment: string[];
+  contents: string;
+  like: number;
+  likeUser: string[];
+  nickName: string;
+  team: string;
+  title: string;
+  videoURL: string;
+  view: number;
+  time: string;
+  num?: number;
+  pageNum?: number;
+  postId?: number;
+  docKey:string;
+};

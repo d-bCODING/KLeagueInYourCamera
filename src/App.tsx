@@ -7,6 +7,7 @@ import MyPage from "./components/MyPage";
 import MyInfo from "./components/MyInfo";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Posting from "./components/Posting";
+import PostDetail from "./components/PostDetail";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
           <Route path="/mypage" element={<MyPage></MyPage>}></Route>
           <Route path="/myinfo" element={<MyInfo></MyInfo>}></Route>
           <Route path="/posting" element={<Posting></Posting>}></Route>
+          <Route path='/postdetail/:id' element={<PostDetail />} />
         </Routes>
       </BrowserRouter>
     </>

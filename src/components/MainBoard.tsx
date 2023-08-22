@@ -3,12 +3,11 @@ import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { isLoginAtom } from "../atoms";
-import { QueryDocumentSnapshot, QuerySnapshot } from "firebase/firestore/lite";
 
-const MainBoard: React.FC<{posts : QuerySnapshot | null}> = (props) => {
-// function MainBoard() {/
+const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
+  // function MainBoard() {/
   const [isLoading, setIsLoading] = useState(false);
-  const [result, setResult] = useState<Post[]>([]);
+  const [result, setResult] = useState<Post[] | null>([]);
   //글쓰기 전 로그인 여부 확인
   const isLogin = useRecoilValue(isLoginAtom);
   const navigate = useNavigate();
@@ -20,54 +19,11 @@ const MainBoard: React.FC<{posts : QuerySnapshot | null}> = (props) => {
     }
   };
 
-  type Post = {
-    comment: string[];
-    contents: string;
-    like: number;
-    likeUser: string[];
-    nickName: string;
-    team: string;
-    title: string;
-    videoURL: string;
-    view: number;
-    time: string;
-  };
-
-  //db에 저장된 게시물들이 모두 포함될 배열
-  let allPost: Post[] = [];
-  //post 목록 가져와서 각 post 배열에 저장
-  async function getAllPost() {
-    const posts = props.posts;
-    if (posts) {
-      posts.forEach((el:QueryDocumentSnapshot) => {
-        const data = el.data();
-        const post: Post = {
-          comment: data.comment,
-          contents: data.contents,
-          like: data.like,
-          likeUser: data.likeUser,
-          nickName: data.nickName,
-          team: data.team,
-          title: data.title,
-          videoURL: data.videoURL,
-          view: data.view,
-          time: data.time,
-        };
-        allPost = [...allPost, post];
-      });
-    }
-    //가져온 게시물들을 최신순으로 위에서부터 정렬
-    console.log("정렬 전",allPost);
-    const sortedAllPost = allPost.sort(
-      (a, b) =>
-        new Date(b.time as string).getTime() -
-        new Date(a.time as string).getTime()
-    );
-    console.log("정렬 후",sortedAllPost);
-    setResult(sortedAllPost);
+  function getAllPost() {
+    setResult(props.posts);
     setIsLoading(true);
   }
-  
+
   useEffect(() => {
     getAllPost();
   }, []);
@@ -89,45 +45,46 @@ const MainBoard: React.FC<{posts : QuerySnapshot | null}> = (props) => {
         </div>
         <ul className="post-list">
           {!isLoading && <span>isLoading</span>}
-          {result.map((el) =>
-            el.videoURL === "" ? (
-              <li key={el.time} className="writing post">
-                <div className="info">
-                  <div className="title-time">
-                    <span className="title">{el.title}</span>
-                    <span className="time">{el.time}</span>
+          {result &&
+            result.map((el) =>
+              el.videoURL === "" ? (
+                <li key={el.time} className="writing post">
+                  <div className="info">
+                    <div className="title-time">
+                      <span className="title">{el.title}</span>
+                      <span className="time">{el.time}</span>
+                    </div>
+                    <p className="author">{el.nickName}</p>
+                    <p className="description">{el.contents}</p>
+                    <div className="communication">
+                      <i className="heart">하트</i>
+                      <i className="comment">댓글</i>
+                    </div>
                   </div>
-                  <p className="author">{el.nickName}</p>
-                  <p className="description">{el.contents}</p>
-                  <div className="communication">
-                    <i className="heart">하트</i>
-                    <i className="comment">댓글</i>
+                </li>
+              ) : (
+                <li key={el.time} className="video post">
+                  <video muted controls src={el.videoURL}></video>
+                  <div className="info">
+                    <div className="title-time">
+                      <span className="title">{el.title}</span>
+                      <span className="time">{el.time}</span>
+                    </div>
+                    <p className="author">{el.nickName}</p>
+                    <p className="description">{el.contents}</p>
+                    <div className="communication">
+                      <i className="heart">하트</i>
+                      <i className="comment">댓글</i>
+                    </div>
                   </div>
-                </div>
-              </li>
-            ) : (
-              <li key={el.time} className="video post">
-                <video muted controls src={el.videoURL}></video>
-                <div className="info">
-                  <div className="title-time">
-                    <span className="title">{el.title}</span>
-                    <span className="time">{el.time}</span>
-                  </div>
-                  <p className="author">{el.nickName}</p>
-                  <p className="description">{el.contents}</p>
-                  <div className="communication">
-                    <i className="heart">하트</i>
-                    <i className="comment">댓글</i>
-                  </div>
-                </div>
-              </li>
-            )
-          )}
+                </li>
+              )
+            )}
         </ul>
       </div>
     </MaingBoardDiv>
   );
-}
+};
 
 export default MainBoard;
 
@@ -241,3 +198,20 @@ const MaingBoardDiv = styled.div`
     }
   }
 `;
+
+type Post = {
+  comment: string[];
+  contents: string;
+  like: number;
+  likeUser: string[];
+  nickName: string;
+  team: string;
+  title: string;
+  videoURL: string;
+  view: number;
+  time: string;
+  num?: number;
+  pageNum?: number;
+  postId?: number;
+  docKey:string;
+};
