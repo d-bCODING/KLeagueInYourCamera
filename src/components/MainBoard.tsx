@@ -55,7 +55,10 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
                       <span className="time">{el.time}</span>
                     </div>
                     <p className="author">{el.nickName}</p>
-                    <p className="description">{el.contents}</p>
+                    <p
+                      className="description"
+                      dangerouslySetInnerHTML={{ __html: el.contents }}
+                    ></p>
                     <div className="communication">
                       <i className="heart">하트</i>
                       <i className="comment">댓글</i>
@@ -71,7 +74,10 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
                       <span className="time">{el.time}</span>
                     </div>
                     <p className="author">{el.nickName}</p>
-                    <p className="description">{el.contents}</p>
+                    <p
+                      className="description"
+                      dangerouslySetInnerHTML={{ __html: el.contents }}
+                    ></p>
                     <div className="communication">
                       <i className="heart">하트</i>
                       <i className="comment">댓글</i>
@@ -109,7 +115,7 @@ const MaingBoardDiv = styled.div`
       transition: 500ms;
       cursor: pointer;
       &:hover {
-        background-color: #0000cc;
+        background-color: wheat;
       }
     }
     .posting {
@@ -131,7 +137,7 @@ const MaingBoardDiv = styled.div`
       text-decoration: none;
       color: black;
       &:hover {
-        background-color: #0000cc;
+        background-color: wheat;
       }
     }
   }
@@ -213,5 +219,5 @@ type Post = {
   num?: number;
   pageNum?: number;
   postId?: number;
-  docKey:string;
+  docKey: string;
 };

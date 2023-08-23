@@ -6,34 +6,69 @@ import { styled } from "styled-components";
 import { db } from "../firebase";
 import { addDoc, collection } from "firebase/firestore/lite";
 import { useNavigate } from "react-router-dom";
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from "firebase/storage";
+import { app } from "../firebase";
 
 function Posting() {
   const [team, setTeam] = useState("null");
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
+  const [fileUrlm, setFileUrl] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+
+  //현재 글쓰고 있는 유저의 닉네임 정보 가져오기
+  const { nickName } = JSON.parse(sessionStorage.getItem("user") || "{}");
+
+  //게시글의 팀 분류 설정
   const teamHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
     setTeam(e.target.value);
   };
 
+  //게시글의 제목 설정
   const titleHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setTitle(e.target.value);
   };
 
-  const { nickName } = JSON.parse(sessionStorage.getItem("user") || "{}");
+  //사용자가 첨부한 파일 인지하기
+  const fileHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+    }
+  };
+
+  //사용자가 첨부한 파일 storage에 업로드 및 해당 url 가져오기
+  const fileUpload = () => {
+    const storage = getStorage(app);
+    const fileRef = ref(storage, `file/${title}${contents}${nickName}`);
+    if (file) {
+      console.log("start 업로드");
+      const uploadTask = uploadBytesResumable(fileRef, file);
+      console.log("done 업로드");
+      uploadTask.on("state_changed", () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log("File available at", downloadURL);
+          setFileUrl(downloadURL);
+        });
+      });
+    }
+  };
 
   console.log(title);
   console.log(contents);
   console.log(team);
 
   const navigate = useNavigate();
-
   async function addPost(e: React.FormEvent) {
     e.preventDefault();
     const today = new Date();
     const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-
     await addDoc(collection(db, "post"), {
       title: title,
       contents: contents,
@@ -44,7 +79,7 @@ function Posting() {
       comment: [],
       likeUser: [],
       videoURL: "",
-      time : time,
+      time: time,
     });
     navigate("/");
   }
@@ -90,12 +125,15 @@ function Posting() {
             }
           ></ReactQuill>
           <div className="button-list">
-            <button className="upload" onClick={addPost}>
-              게시하기
-            </button>
-            <button className="cancel" onClick={cancelPosting}>
-              취소하기
-            </button>
+            <input type="file" onChange={fileHandler} />
+            <div>
+              <button className="upload" onClick={addPost}>
+                게시하기
+              </button>
+              <button className="cancel" onClick={cancelPosting}>
+                취소하기
+              </button>
+            </div>
           </div>
         </form>
       </ForQuillDiv>
@@ -156,14 +194,18 @@ const ForQuillDiv = styled.div`
     }
     .button-list {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       gap: 4px;
-      button {
-        width: 100px;
-        height: 36px;
-        border: none;
-        border-radius: 2px;
-        cursor: pointer;
+      div {
+        display: flex;
+        gap: 4px;
+        button {
+          width: 100px;
+          height: 36px;
+          border: none;
+          border-radius: 2px;
+          cursor: pointer;
+        }
       }
     }
   }

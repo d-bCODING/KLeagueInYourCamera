@@ -81,7 +81,7 @@ const SearchedList: React.FC<{ posts: Post[] | null }> = (props) => {
   //상세페이지 이동 함수
   const navigate = useNavigate();
   const goDetailInfo = (el: Post) => {
-    navigate(`/postdetail/${el.postId}`, { state: el });
+    navigate(`/postdetail/${el.docKey}`, { state: el });
   };
 
   return (

@@ -8,12 +8,14 @@ import MyInfo from "./components/MyInfo";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Posting from "./components/Posting";
 import PostDetail from "./components/PostDetail";
+import Test from "./Test";
 
 function App() {
   return (
     <>
       <Reset></Reset>
-      <BrowserRouter>
+      <Test></Test>
+      {/* <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage></MainPage>}></Route>
           <Route path="/login" element={<Login></Login>}></Route>
@@ -21,9 +23,9 @@ function App() {
           <Route path="/mypage" element={<MyPage></MyPage>}></Route>
           <Route path="/myinfo" element={<MyInfo></MyInfo>}></Route>
           <Route path="/posting" element={<Posting></Posting>}></Route>
-          <Route path='/postdetail/:id' element={<PostDetail />} />
+          <Route path="/postdetail/:id" element={<PostDetail />} />
         </Routes>
-      </BrowserRouter>
+      </BrowserRouter> */}
     </>
   );
 }

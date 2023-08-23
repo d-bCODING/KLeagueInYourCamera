@@ -1,37 +1,173 @@
+import { styled } from "styled-components";
 import Header from "./part/Header";
-import { useParams, useLocation } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { db } from "../firebase";
+import { DocumentData, doc, getDoc, updateDoc } from "firebase/firestore/lite";
+import { useEffect, useState } from "react";
 
 function PostDetail() {
-  //url의 번호이자 해당 게시물의 postId
+  const [postData, setPostData] = useState<DocumentData>();
+  const [comment, setComment] = useState("");
   const params = useParams();
-  const location = useLocation();
-  console.log(params.id);
-  console.log(location);
+  const { nickName } = JSON.parse(sessionStorage.getItem("user") || "null");
 
-  const { state: data } = location;
-  console.log(data);
+  async function getPostData() {
+    const postRef = doc(db, "post", `${params.id}`);
+    const res = await getDoc(postRef);
+    const resData = res.data();
+    setPostData(resData);
+  }
+
+  useEffect(() => {
+    getPostData();
+  }, []);
+
+  //댓글 추가하는 함수
+  const updateComment = async () => {
+    const postRef = doc(db, "post", `${params.id}`);
+    let commentArr = [];
+    if (postData) {
+      commentArr = postData.comment;
+    }
+    await updateDoc(postRef, {
+      comment: [
+        ...commentArr,
+        {
+          author: nickName,
+          contents: comment,
+        },
+      ],
+    });
+  };
+
+  //댓글 input창
+  const commentHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setComment(e.target.value);
+  };
 
   return (
     <>
       <Header></Header>
-      <div className="post">
-        <p className="title">제목</p>
-        <div className="title-info">
-          <div className="author-time">
-            <span>글쓴이</span>
-            <span>시간</span>
-          </div>
-          <div className="communicate">
-            <span>좋아요수</span>
-            <span>댓글수</span>
-          </div>
-        </div>
-        <div className="contents">
-            내용
-        </div>
-      </div>
+      <PostDetailDiv className="post">
+        {!postData && <span>isLoading</span>}
+        {postData && (
+          <>
+            <p className="title">{postData.title}</p>
+            <div className="title-info">
+              <div className="author-time">
+                <span className="nickName">{postData.nickName}</span>
+                <span className="time">{postData.time}</span>
+              </div>
+              <div className="communicate">
+                <span>좋아요수</span>
+                <span>댓글수</span>
+              </div>
+            </div>
+            <div
+              className="contents"
+              dangerouslySetInnerHTML={{ __html: postData.contents }}
+            ></div>
+            <div className="comment-wrap">
+              <p className="guide">댓글 {postData.comment.length}개</p>
+              {postData.comment.map((el: Comment, index: number) => (
+                <div key={index} className="comment">
+                  <span className="comment-author">{el.author}</span>
+                  <span className="comment-contents">{el.contents}</span>
+                </div>
+              ))}
+              <form className="comment-form" action="">
+                <input
+                  className="write-comment"
+                  type="text"
+                  placeholder="댓글 작성"
+                  onChange={commentHandler}
+                />
+                <button onClick={updateComment}>작성</button>
+              </form>
+            </div>
+          </>
+        )}
+      </PostDetailDiv>
     </>
   );
 }
 
 export default PostDetail;
+
+const PostDetailDiv = styled.div`
+  color: black;
+  background-color: white;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  padding: 20px 0;
+  border-radius: 10px;
+  text-align: left;
+  .title {
+    padding-left: 40px;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  .title-info {
+    padding: 10px 40px;
+    border-radius: 4px;
+    display: flex;
+    background-color: #e0e0e0;
+    justify-content: space-between;
+    margin-bottom: 40px;
+    .author-time {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      .time {
+        font-size: 12px;
+      }
+    }
+  }
+  .contents {
+    padding-left: 40px;
+    min-height: 400px;
+  }
+  .comment-wrap {
+    padding: 0 40px 10px;
+    background-color: #e0e0e0;
+    .guide {
+      font-weight: bold;
+      border-bottom: 1px solid #000;
+      padding: 10px 0;
+    }
+    .comment {
+      padding: 10px 0 0;
+      .comment-author {
+        display: inline-block;
+        font-weight: bold;
+        margin-right: 10px;
+      }
+    }
+    .comment-form {
+      display: flex;
+      margin-top: 20px;
+      height: 40px;
+      .write-comment {
+        width: 94%;
+        border: none;
+        box-sizing: border-box;
+        border-radius: 6px 0 0 6px;
+        padding-left: 10px;
+      }
+      button {
+        width: 6%;
+        border-radius: 0 6px 6px 0;
+        border: none;
+      }
+    }
+  }
+`;
+
+type Comment = {
+  author: string;
+  contents: string;
+};
