@@ -4,6 +4,7 @@ import {
   ref,
   uploadBytesResumable,
   getDownloadURL,
+  uploadBytes,
 } from "firebase/storage";
 import { app } from "./firebase";
 import ReactQuill from "react-quill";
@@ -21,23 +22,48 @@ function Test() {
     const storage = getStorage(app);
     const fileRef = ref(storage, "image/달");
     if (image) {
-      console.log("start 업로드");
-
-      const uploadTask = uploadBytesResumable(fileRef, image);
-
-      console.log("done 업로드");
-
-      uploadTask.on("state_changed", () => {
-        // Handle successful uploads on complete
-        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at", downloadURL);
+      uploadBytes(fileRef, image).then(async (snapshot) => {
+        console.log(snapshot);
+        await getDownloadURL(ref(storage, "image/달")).then((url) => {
+          console.log(url);
         });
+        console.log("Uploaded a blob or file!");
       });
-
-      // const response = await uploadString(fileRef, src, 'data_url');
-      // console.log(response);
     }
+    // if (image) {
+    //   console.log("start 업로드");
+
+    //  const uploadTask = uploadBytesResumable(fileRef, image);
+
+    //   console.log("done 업로드");
+
+    //   uploadTask.on('state_changed',
+    //   (snapshot) => {
+    //     const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+    //     // console.log('Upload is ' + progress + '% done');
+    //     // switch (snapshot.state) {
+    //     //   case 'paused':
+    //     //     console.log('Upload is paused');
+    //     //     break;
+    //     //   case 'running':
+    //     //     console.log('Upload is running');
+    //     //     break;
+    //     // }
+    //   },
+    //   (error) => {
+    //     console.log(error);
+    //   },
+    //   () => {
+    //     // Handle successful uploads on complete
+    //     // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+    //     getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+    //       console.log('File available at', downloadURL);
+    //     });
+    //   }
+    // );
+    //   // const response = await uploadString(fileRef, src, 'data_url');
+    //   // console.log(response);
+    // }
   };
 
   return (

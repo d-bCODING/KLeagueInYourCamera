@@ -184,7 +184,7 @@ function SignUp() {
           <li className="selectTeam-form">
             <span>팀 선택</span>
             <select name="" id="" onChange={teamHandler}>
-              <option value="none">팀선택</option>
+              <option selected value="none">팀선택</option>
               <option value="ulsan">울산</option>
               <option value="jeonbuk">전북</option>
               <option value="pohang">포항</option>
@@ -194,6 +194,7 @@ function SignUp() {
               <option value="suwonFC">수원FC</option>
               <option value="daegu">대구</option>
               <option value="seoul">FC서울</option>
+              <option value="suwon">수원삼성</option>
               <option value="gwangju">광주</option>
               <option value="daejeon">대전</option>
             </select>

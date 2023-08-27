@@ -20,7 +20,6 @@ function MainPage() {
   //각 페이지에서 쓰일 데이터들 처음에만 가져와서 내려주도록 함
   async function getAllPost() {
     const posts = await getDocs(collection(db, "post"));
-    console.log(posts);
     
     posts.forEach((el) => {
       const data = el.data();
@@ -33,7 +32,8 @@ function MainPage() {
         nickName: data.nickName,
         team: data.team,
         title: data.title,
-        videoURL: data.videoURL,
+        fileURL: data.fileURL,
+        fileType:data.fileType,
         view: data.view,
         time: data.time,
         docKey : docKey,
@@ -85,7 +85,8 @@ type Post = {
   nickName: string;
   team: string;
   title: string;
-  videoURL: string;
+  fileURL: string;
+  fileType:string;
   view: number;
   time: string;
   num?: number;

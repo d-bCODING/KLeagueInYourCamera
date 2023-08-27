@@ -6,19 +6,13 @@ import { styled } from "styled-components";
 import { db } from "../firebase";
 import { addDoc, collection } from "firebase/firestore/lite";
 import { useNavigate } from "react-router-dom";
-import {
-  getStorage,
-  ref,
-  uploadBytesResumable,
-  getDownloadURL,
-} from "firebase/storage";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { app } from "../firebase";
 
 function Posting() {
   const [team, setTeam] = useState("null");
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
-  const [fileUrlm, setFileUrl] = useState("");
   const [file, setFile] = useState<File | null>(null);
 
   //현재 글쓰고 있는 유저의 닉네임 정보 가져오기
@@ -28,6 +22,7 @@ function Posting() {
   const teamHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
     setTeam(e.target.value);
+    console.log(team);
   };
 
   //게시글의 제목 설정
@@ -37,57 +32,64 @@ function Posting() {
   };
 
   //사용자가 첨부한 파일 인지하기
-  const fileHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const fileHandler = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
     }
   };
+console.log(file?.type);
 
-  //사용자가 첨부한 파일 storage에 업로드 및 해당 url 가져오기
-  const fileUpload = () => {
+  //사용자가 첨부한 파일 storage에 업로드 및 해당 url 가져온 후 문서에 함께 추가
+  const navigate = useNavigate();
+  async function fileUpload(e: React.FormEvent) {
+    e.preventDefault();
     const storage = getStorage(app);
     const fileRef = ref(storage, `file/${title}${contents}${nickName}`);
     if (file) {
-      console.log("start 업로드");
-      const uploadTask = uploadBytesResumable(fileRef, file);
-      console.log("done 업로드");
-      uploadTask.on("state_changed", () => {
-        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          console.log("File available at", downloadURL);
-          setFileUrl(downloadURL);
+      await uploadBytes(fileRef, file).then(async () => {
+        await getDownloadURL(
+          ref(storage, `file/${title}${contents}${nickName}`)
+        ).then(async (url) => {
+          const today = new Date();
+          const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+          await addDoc(collection(db, "post"), {
+            title: title,
+            contents: contents,
+            team: team,
+            nickName: nickName,
+            view: 0,
+            like: 0,
+            comment: [],
+            likeUser: [],
+            fileType : file?.type,
+            fileURL: url,
+            time: time,
+          });
+          navigate("/");
         });
       });
+    }else{
+      const today = new Date();
+          const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+          await addDoc(collection(db, "post"), {
+            title: title,
+            contents: contents,
+            team: team,
+            nickName: nickName,
+            view: 0,
+            like: 0,
+            fileURL: "none",
+            comment: [],
+            likeUser: [],
+            time: time,
+          });
+          navigate("/");
     }
-  };
-
-  console.log(title);
-  console.log(contents);
-  console.log(team);
-
-  const navigate = useNavigate();
-  async function addPost(e: React.FormEvent) {
-    e.preventDefault();
-    const today = new Date();
-    const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-    await addDoc(collection(db, "post"), {
-      title: title,
-      contents: contents,
-      team: team,
-      nickName: nickName,
-      view: 0,
-      like: 0,
-      comment: [],
-      likeUser: [],
-      videoURL: "",
-      time: time,
-    });
-    navigate("/");
   }
 
+  //게시물 작성 취소하고 나가기
   const cancelPosting = (e: React.FormEvent) => {
     e.preventDefault();
-    const today = new Date();
-    console.log(today.toLocaleString());
     navigate("/");
   };
 
@@ -98,7 +100,7 @@ function Posting() {
         <form action="">
           <div className="title">
             <select name="" id="" onChange={teamHandler}>
-              <option value="null">팀</option>
+              <option value="none">팀</option>
               <option value="ulsan">울산</option>
               <option value="jeonbuk">전북</option>
               <option value="pohang">포항</option>
@@ -127,7 +129,7 @@ function Posting() {
           <div className="button-list">
             <input type="file" onChange={fileHandler} />
             <div>
-              <button className="upload" onClick={addPost}>
+              <button className="upload" onClick={fileUpload}>
                 게시하기
               </button>
               <button className="cancel" onClick={cancelPosting}>
@@ -174,6 +176,9 @@ const ForQuillDiv = styled.div`
         border: none;
         box-sizing: border-box;
         padding: 0 20px;
+        &:focus{
+          outline: none;
+        }
       }
     }
     .quill {
@@ -261,7 +266,6 @@ const modules = {
         },
         { background: [] },
       ],
-      ["image", "video"],
       ["clean"],
     ],
   },

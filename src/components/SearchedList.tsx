@@ -201,11 +201,12 @@ type Post = {
   nickName: string;
   team: string;
   title: string;
-  videoURL: string;
+  fileURL: string;
   view: number;
   time: string;
   num?: number;
   pageNum?: number;
   postId?: number;
+  fileType:string;
   docKey:string;
 };

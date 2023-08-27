@@ -171,7 +171,7 @@ const HeaderDiv = styled.div`
       color: white;
       text-decoration: none;
       border-radius: 7px;
-      transition: 300ms;
+      transition: 500ms;
       &:hover {
         background-color: white;
         color: black;

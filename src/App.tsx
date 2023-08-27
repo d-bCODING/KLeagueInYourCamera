@@ -8,24 +8,26 @@ import MyInfo from "./components/MyInfo";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Posting from "./components/Posting";
 import PostDetail from "./components/PostDetail";
-import Test from "./Test";
+import SignUpWithGoogle from "./components/SignUpWithGoogle";
+import Confirm from "./components/Confirm";
 
 function App() {
   return (
     <>
       <Reset></Reset>
-      <Test></Test>
-      {/* <BrowserRouter>
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainPage></MainPage>}></Route>
           <Route path="/login" element={<Login></Login>}></Route>
           <Route path="/signup" element={<SignUp></SignUp>}></Route>
+          <Route path="/signupgoogle" element={<SignUpWithGoogle></SignUpWithGoogle>}></Route>
           <Route path="/mypage" element={<MyPage></MyPage>}></Route>
           <Route path="/myinfo" element={<MyInfo></MyInfo>}></Route>
+          <Route path="/confirm" element={<Confirm></Confirm>}></Route>
           <Route path="/posting" element={<Posting></Posting>}></Route>
           <Route path="/postdetail/:id" element={<PostDetail />} />
         </Routes>
-      </BrowserRouter> */}
+      </BrowserRouter>
     </>
   );
 }

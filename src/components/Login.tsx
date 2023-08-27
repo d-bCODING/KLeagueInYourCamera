@@ -2,9 +2,10 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { getDocs, collection } from "firebase/firestore/lite";
-import { db } from "../firebase";
+import { db, auth } from "../firebase";
 import { isLoginAtom } from "../atoms";
 import { useRecoilState } from "recoil";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -24,7 +25,8 @@ function Login() {
     email: string;
     password: string;
     team: string;
-    nickName:string;
+    nickName: string;
+    docId: string;
   };
 
   let userList: User[] = [];
@@ -33,9 +35,10 @@ function Login() {
   const setUserList = async () => {
     const users = await getDocs(collection(db, "account"));
     users.docs.map((doc) => {
+      const docId = doc.id;
       const { email, password, team, nickName } = doc.data();
       if (Array.isArray(userList)) {
-        userList.push({ email, password, team, nickName });
+        userList.push({ email, password, team, nickName, docId });
       }
     });
   };
@@ -56,7 +59,7 @@ function Login() {
     if (matchIndex === -1) {
       alert("이메일 혹은 비밀번호를 확인해주세요");
       return false;
-    //매칭되는 이메일이 있다면
+      //매칭되는 이메일이 있다면
     } else {
       //비밀번호 매칭 과정
       if (userList[matchIndex].password !== password) {
@@ -69,6 +72,35 @@ function Login() {
       }
     }
   };
+
+  //구글 로그인
+  function handleGoogleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    const provider = new GoogleAuthProvider(); // provider를 구글로 설정
+    signInWithPopup(auth, provider) // popup을 이용한 signup
+      .then(async (data) => {
+        //회원가입 되어 있는 유저 리스트 가져와서 배열에 담기
+        await setUserList();
+
+        //사용자가 입력한 이메일과 매칭되는 객체의 인덱스 번호 저장
+        const matchIndex = userList.findIndex(
+          (obj) => obj.email === data.user.email
+        );
+
+        //매칭되는 이메일이 없다면
+        if (matchIndex === -1) {
+          navigate(`/signupgoogle`, { state: data.user.email });
+          //매칭되는 이메일이 있다면
+        } else {
+          sessionStorage.setItem("user", JSON.stringify(userList[matchIndex]));
+          setIsLogin(true);
+          navigate("/");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   return (
     <LoginDiv>
@@ -96,7 +128,7 @@ function Login() {
         <button className="login" onClick={submitHandler}>
           로그인
         </button>
-        <button className="login-google">
+        <button className="login-google" onClick={handleGoogleLogin}>
           <span>구글 로그인</span>
           <img src="/src/assets/googleLogo.png" alt="구글 로고" />
         </button>

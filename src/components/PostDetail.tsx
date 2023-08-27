@@ -4,12 +4,19 @@ import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { DocumentData, doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { useEffect, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { isLoginAtom } from "../atoms";
 
 function PostDetail() {
   const [postData, setPostData] = useState<DocumentData>();
   const [comment, setComment] = useState("");
   const params = useParams();
-  const { nickName } = JSON.parse(sessionStorage.getItem("user") || "null");
+
+  let nickName = "";
+  if (sessionStorage.getItem("user")) {
+    const userData = JSON.parse(sessionStorage.getItem("user") || "null");
+    nickName = userData.nickName;
+  }
 
   async function getPostData() {
     const postRef = doc(db, "post", `${params.id}`);
@@ -22,8 +29,15 @@ function PostDetail() {
     getPostData();
   }, []);
 
+  //
+  const isLogin = useRecoilValue(isLoginAtom);
+
   //댓글 추가하는 함수
   const updateComment = async () => {
+    if (!isLogin) {
+      alert("로그인을 하셔야 글을 작성할 수 있습니다.");
+      return false;
+    }
     const postRef = doc(db, "post", `${params.id}`);
     let commentArr = [];
     if (postData) {
@@ -46,6 +60,8 @@ function PostDetail() {
     setComment(e.target.value);
   };
 
+  console.log(postData?.fileType);
+
   return (
     <>
       <Header></Header>
@@ -64,10 +80,20 @@ function PostDetail() {
                 <span>댓글수</span>
               </div>
             </div>
-            <div
-              className="contents"
-              dangerouslySetInnerHTML={{ __html: postData.contents }}
-            ></div>
+            <div className="contents">
+              <div className="url-contents">
+                {postData.fileURL && postData.fileType.charAt(0) === "i" && (
+                  <img src={postData.fileURL}></img>
+                )}
+                {postData.fileURL && postData.fileType.charAt(0) === "v" && (
+                  <video muted controls src={postData.fileURL}></video>
+                )}
+              </div>
+              <p
+                className="contents-writing"
+                dangerouslySetInnerHTML={{ __html: postData.contents }}
+              ></p>
+            </div>
             <div className="comment-wrap">
               <p className="guide">댓글 {postData.comment.length}개</p>
               {postData.comment.map((el: Comment, index: number) => (
@@ -102,9 +128,10 @@ const PostDetailDiv = styled.div`
   left: 50%;
   transform: translateX(-50%);
   width: 1000px;
-  padding: 20px 0;
+  padding: 20px 0 0;
   border-radius: 10px;
   text-align: left;
+  margin-bottom: 80px;
   .title {
     padding-left: 40px;
     font-size: 18px;
@@ -128,8 +155,18 @@ const PostDetailDiv = styled.div`
     }
   }
   .contents {
-    padding-left: 40px;
+    padding: 0 40px 20px;
     min-height: 400px;
+    .url-contents{
+      display: flex;
+      justify-content: center;
+      img,
+      video {
+        margin-bottom: 20px;
+        max-width: 100%;
+        max-height: 400px;
+      }
+    }
   }
   .comment-wrap {
     padding: 0 40px 10px;

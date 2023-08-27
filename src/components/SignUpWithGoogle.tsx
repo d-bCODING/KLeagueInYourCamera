@@ -1,29 +1,22 @@
+import React, { useState } from "react";
 import { styled } from "styled-components";
-import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { collection, updateDoc, getDocs, doc } from "firebase/firestore/lite";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { db } from "../firebase";
+import { collection, addDoc, getDocs } from "firebase/firestore/lite";
 
-function MyInfo() {
-  //세션에 저장된 로그인한 유저의 정보중 team, nickName 정보 가져옴
-  const {
-    team: userTeam,
-    nickName: userNickName,
-    docId: userId,
-    email: userEmail,
-  } = JSON.parse(sessionStorage.getItem("user") || "null");
-
-  const [nickName, setNickName] = useState("");
-  const [password, setPassword] = useState("");
-  const [rePassword, setRePassword] = useState("");
-  const [team, setTeam] = useState("");
-
-  //유저 정보들 중 닉네임들만 가져오기(중복 검사용)
+function SignUpWithGoogle() {
+    const [nickName, setNickName] = useState("");
+    const [password, setPassword] = useState("");
+    const [rePassword, setRePassword] = useState("");
+    const [team, setTeam] = useState("");
+    const location = useLocation();
+    
 
   const nickNameHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setNickName(e.target.value);
   };
+
   const passwordHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setPassword(e.target.value);
@@ -37,26 +30,34 @@ function MyInfo() {
     setTeam(e.target.value);
   };
 
-  //회원정보 수정 과정
-  const navigate = useNavigate();
-  const fixInfoSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    //닉네임만 가져와서 배열에 저장해놓기
-    let nickNameList: String[] = [];
-    const users = await getDocs(collection(db, "account"));
-    users.docs.forEach((el) => {
-      nickNameList = [...nickNameList, el.data().nickName];
-    });
-
+  //유효성 검사
+  const submitConfirm = async () => {
     //닉네임 기입 여부
     if (nickName.length === 0) {
       alert("닉네임을 입력해주세요");
       return false;
     }
 
+    //닉네임 중복 여부
+    type User = {
+      nickName: string;
+      email: string;
+    };
+
+    let userList: User[] = [];
+
+    //회원가입 되어 있는 계정들의 닉네임과 이메일 가져오기
+    const users = await getDocs(collection(db, "account"));
+    users.docs.map((doc) => {
+      const { nickName, email } = doc.data();
+      if (Array.isArray(userList)) {
+        userList.push({ nickName, email });
+      }
+    });
+
     //중복된 닉네임이 있다면 isNickName에 true 저장
-    const isNickName = nickNameList.some((el) => el === nickName);
+    const isNickName = userList.some((el) => el.nickName === nickName);
+
     if (isNickName) {
       alert("중복된 닉네임입니다. 다른 닉네임을 사용해주세요");
       return false;
@@ -80,35 +81,41 @@ function MyInfo() {
       return false;
     }
 
-    // 회원 정보에 수정
-    const userIdRef = doc(db, "account", `${userId}`);
-    await updateDoc(userIdRef, {
-      nickName: nickName,
-      team: team,
-      password: password,
-    });
-    sessionStorage.setItem(
-      "user",
-      JSON.stringify({
-        nickName: nickName,
-        team: team,
-        password: password,
-        docId: userId,
-        email : userEmail,
-      })
-    );
-    navigate("/mypage");
+    return true;
+  };
+
+  //회원가입 될 유저 정보
+  let newUser = {
+    email: location.state,
+    imagae: "url",
+    nickName: nickName,
+    password: password,
+    team: team,
+  };
+
+  const navigation = useNavigate();
+
+  //회원가입 과정
+  const signUpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    //유효성 검사 통과 여부
+    const check = await submitConfirm();
+    if (!check) {
+      return false;
+    }
+
+    //회원 정보에 추가
+    await addDoc(collection(db, "account"), newUser);
+    alert("회원가입 완료");
+    navigation("/login");
   };
 
   return (
-    <MyInfoDiv>
+    <SignUpDiv className="inner">
       <Link to={"/"} className="main-Logo">
         <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
       </Link>
-      <div className="show-user">
-        <img src={`/src/assets/teamLogo/${userTeam}.png`} alt="인천" />
-        <span>{userNickName}님 정보 수정</span>
-      </div>
       <form action="" className="signUp-form">
         <ul className="input-list">
           <li className="nickName-form">
@@ -151,102 +158,104 @@ function MyInfo() {
               <option value="suwonFC">수원FC</option>
               <option value="daegu">대구</option>
               <option value="seoul">FC서울</option>
+              <option value="suwon">수원삼성</option>
               <option value="gwangju">광주</option>
               <option value="daejeon">대전</option>
             </select>
           </li>
         </ul>
-        <button className="submit" onClick={fixInfoSubmit}>
-          회원정보 수정
+        <button className="submit" onClick={signUpSubmit}>
+          회원가입
         </button>
       </form>
-    </MyInfoDiv>
+    </SignUpDiv>
   );
 }
 
-export default MyInfo;
+export default SignUpWithGoogle;
 
-const MyInfoDiv = styled.div`
+const SignUpDiv = styled.div`
+  padding-top: 120px;
   .main-Logo {
     display: inline-block;
-    width: 220px;
-    padding-top: 40px;
-    margin-bottom: 40px;
+    width: 400px;
     img {
       width: 100%;
     }
+    margin-bottom: 50px;
   }
-  .show-user {
-    width: 500px;
-    margin: 0 auto;
-    padding: 10px 0px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background-color: #dadada;
-    border-radius: 10px;
-    color: black;
-    margin-bottom: 100px;
-    img {
-      width: 80px;
-    }
-    span {
-      font-size: 18px;
-      font-weight: bold;
-    }
-  }
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  .input-list {
+  .signUp-form {
     display: flex;
     flex-direction: column;
-    gap: 30px;
-    margin-bottom: 100px;
-    li {
-      width: 400px;
+    align-items: center;
+    .input-list {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      span {
-        font-size: 18px;
-        position: relative;
+      flex-direction: column;
+      gap: 30px;
+      margin-bottom: 100px;
+      li {
+        width: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        span {
+          font-size: 18px;
+          position: relative;
+          &::after {
+            content: "";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 4px;
+            height: 4px;
+            background-color: red;
+            border-radius: 100%;
+          }
+        }
+        input {
+          width: 300px;
+          height: 40px;
+          padding-left: 10px;
+          border-radius: 7px;
+          border: none;
+          box-sizing: border-box;
+          &:focus {
+            outline: none;
+          }
+        }
       }
-      input {
-        width: 300px;
-        height: 40px;
-        padding-left: 10px;
-        border-radius: 7px;
-        border: none;
-        box-sizing: border-box;
-        &:focus {
-          outline: none;
+      .selectTeam-form {
+        select {
+          padding-left: 10px;
+          width: 300px;
+          height: 40px;
+          border-radius: 7px;
+          border: none;
+          box-sizing: border-box;
+          &:focus {
+            outline: none;
+          }
+        }
+      }
+      .rePassword-form,
+      .selectTeam-form {
+        span {
+          &::after {
+            display: none;
+          }
         }
       }
     }
-    .selectTeam-form {
-      select {
-        padding-left: 10px;
-        width: 300px;
-        height: 40px;
-        border-radius: 7px;
-        border: none;
-        box-sizing: border-box;
-        &:focus {
-          outline: none;
-        }
-      }
+    .submit {
+      width: 400px;
+      height: 46px;
+      border-radius: 10px;
+      background-color: #1e61e2;
+      color: white;
+      font-size: 18px;
+      border: none;
+      box-sizing: border-box;
+      cursor: pointer;
     }
-  }
-  .submit {
-    width: 400px;
-    height: 46px;
-    border-radius: 10px;
-    background-color: #1e61e2;
-    color: white;
-    font-size: 18px;
-    border: none;
-    box-sizing: border-box;
-    cursor: pointer;
   }
 `;
