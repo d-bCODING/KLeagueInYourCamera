@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 import Header from "./part/Header";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { DocumentData, doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { useEffect, useState } from "react";
@@ -33,6 +33,7 @@ function PostDetail() {
   const isLogin = useRecoilValue(isLoginAtom);
 
   //댓글 추가하는 함수
+  const navigate = useNavigate();
   const updateComment = async () => {
     if (!isLogin) {
       alert("로그인을 하셔야 글을 작성할 수 있습니다.");
@@ -52,6 +53,7 @@ function PostDetail() {
         },
       ],
     });
+    navigate(`/postdetail/${params.id}`);
   };
 
   //댓글 input창

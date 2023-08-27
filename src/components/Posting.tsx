@@ -22,7 +22,6 @@ function Posting() {
   const teamHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
     e.preventDefault();
     setTeam(e.target.value);
-    console.log(team);
   };
 
   //게시글의 제목 설정
@@ -37,7 +36,6 @@ function Posting() {
       setFile(e.target.files[0]);
     }
   };
-console.log(file?.type);
 
   //사용자가 첨부한 파일 storage에 업로드 및 해당 url 가져온 후 문서에 함께 추가
   const navigate = useNavigate();
