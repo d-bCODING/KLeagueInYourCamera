@@ -58,7 +58,7 @@ function PostDetail() {
         },
       ],
     });
-    navigate("/")
+    navigate(`/postdetail/${params.id}`)
   };
 
   //댓글 input창
