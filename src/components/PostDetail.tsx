@@ -1,6 +1,6 @@
 import { styled } from "styled-components";
 import Header from "./part/Header";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { db } from "../firebase";
 import { DocumentData, doc, getDoc, updateDoc } from "firebase/firestore/lite";
 import { useEffect, useState } from "react";
