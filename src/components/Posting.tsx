@@ -123,7 +123,10 @@ console.log(file?.type);
             modules={modules}
             className="inner"
             onChange={(content, delta, source, editor) =>
-              setContents(editor.getHTML())
+              {
+                console.log(content, delta, source);
+                setContents(editor.getHTML());
+              }
             }
           ></ReactQuill>
           <div className="button-list">
