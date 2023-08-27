@@ -9,7 +9,7 @@ import { searchKeywordAtom } from "../../atoms";
 function Header() {
   // const user = JSON.parse(sessionStorage.getItem("user") || "null");/
   const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
-  const [imgSrc, setImgSrc] = useState("/src/assets/searchBtnStop.png");
+  const [imgSrc, setImgSrc] = useState("https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/searchBtnStop.png?raw=true");
   const [searchKeyword, setSearchKeyword] = useState("");
 
   //로그아웃과정, Recoil값 false로 바꿔주고, session에 저장된 값 삭제

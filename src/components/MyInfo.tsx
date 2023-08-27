@@ -105,7 +105,7 @@ function MyInfo() {
         <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/mainLogo.png?raw=true" alt="메인페이지로 이동" />
       </Link>
       <div className="show-user">
-        <img src={`https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/teamLogo/${userTeam}.png?raw=true`} alt="유저 팀" />
+        <img src={`https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/teamLogo/${userTeam}.png?raw=true`} alt="유저 팀 로고" />
         <span>{userNickName}님 정보 수정</span>
       </div>
       <form action="" className="signUp-form">

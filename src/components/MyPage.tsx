@@ -13,7 +13,7 @@ function MyPage() {
         <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/mainLogo.png?raw=true" alt="메인페이지로 이동" />
       </Link>
       <div className="show-user">
-        <img src={`/src/assets/teamLogo/${team}.png`} alt="인천" />
+        <img src={`https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/teamLogo/${team}.png?raw=true`} alt="유저 팀 로고" />
         <span>{nickName}님 마이페이지</span>
       </div>
       <ul className="menu-list">
