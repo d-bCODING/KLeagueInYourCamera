@@ -1,8 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import { getFirestore } from 'firebase/firestore/lite'
-import { getStorage, ref, uploadString } from 'firebase/storage';
+import { getFirestore } from "firebase/firestore/lite";
+import { getStorage } from "firebase/storage";
 import { getAuth } from "firebase/auth";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -17,7 +16,7 @@ const firebaseConfig = {
   storageBucket: "kleagueinyourcamera.appspot.com",
   messagingSenderId: "773739073507",
   appId: "1:773739073507:web:b86567f5a10ba1c847dad6",
-  measurementId: "G-XK7007X0ZW"
+  measurementId: "G-XK7007X0ZW",
 };
 
 // Initialize Firebase

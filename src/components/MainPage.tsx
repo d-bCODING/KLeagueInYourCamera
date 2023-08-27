@@ -5,7 +5,7 @@ import MainBoard from "./MainBoard";
 import SearchedList from "./SearchedList";
 import { getDocs, collection } from "firebase/firestore/lite";
 import { db } from "../firebase";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useState } from "react";
 
 function MainPage() {
   const [isPosts, setIsPosts] = useState(false);

@@ -4,13 +4,13 @@ import { styled } from "styled-components";
 import { getDocs, collection } from "firebase/firestore/lite";
 import { db, auth } from "../firebase";
 import { isLoginAtom } from "../atoms";
-import { useRecoilState } from "recoil";
+import { useSetRecoilState } from "recoil";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLogin, setIsLogin] = useRecoilState(isLoginAtom);
+  const setIsLogin = useSetRecoilState(isLoginAtom);
 
   const emailHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
