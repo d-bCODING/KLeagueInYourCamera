@@ -33,17 +33,21 @@ function PostDetail() {
   const isLogin = useRecoilValue(isLoginAtom);
 
   //댓글 추가하는 함수
-  const navigate = useNavigate();
-  const updateComment = async () => {
+  const updateComment = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!isLogin) {
       alert("로그인을 하셔야 글을 작성할 수 있습니다.");
       return false;
     }
+    if (comment == "") {
+      alert("내용을 입력해주세요");
+      return false;
+    }
     const postRef = doc(db, "post", `${params.id}`);
     let commentArr = [];
-    if (postData) {
-      commentArr = postData.comment;
-    }
+    //이전에 있는 댓글들 가져와주고
+    commentArr = postData?.comment;
+    //업데이트 과정 시작
     await updateDoc(postRef, {
       comment: [
         ...commentArr,
@@ -53,7 +57,6 @@ function PostDetail() {
         },
       ],
     });
-    navigate(`/postdetail/${params.id}`);
   };
 
   //댓글 input창
@@ -61,8 +64,6 @@ function PostDetail() {
     e.preventDefault();
     setComment(e.target.value);
   };
-
-  console.log(postData?.fileType);
 
   return (
     <>
@@ -84,12 +85,14 @@ function PostDetail() {
             </div>
             <div className="contents">
               <div className="url-contents">
-                {postData.fileURL !== "none" && postData.fileType.charAt(0) === "i" && (
-                  <img src={postData.fileURL}></img>
-                )}
-                {postData.fileURL !== "none" && postData.fileType.charAt(0) === "v" && (
-                  <video muted controls src={postData.fileURL}></video>
-                )}
+                {postData.fileURL !== "none" &&
+                  postData.fileType.charAt(0) === "i" && (
+                    <img src={postData.fileURL}></img>
+                  )}
+                {postData.fileURL !== "none" &&
+                  postData.fileType.charAt(0) === "v" && (
+                    <video muted controls src={postData.fileURL}></video>
+                  )}
               </div>
               <p
                 className="contents-writing"
@@ -159,7 +162,7 @@ const PostDetailDiv = styled.div`
   .contents {
     padding: 0 40px 20px;
     min-height: 400px;
-    .url-contents{
+    .url-contents {
       display: flex;
       justify-content: center;
       img,

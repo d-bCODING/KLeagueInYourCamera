@@ -7,12 +7,10 @@ import { useNavigate } from "react-router-dom";
 const SearchedList: React.FC<{ posts: Post[] | null }> = (props) => {
   // function SearchedList() {
   const [showedPageNum, setShowedPageNum] = useState<Number>(1);
-  console.log("받아온 것", props.posts);
   const posts = props.posts;
   //사용자가 입력한 검색 키워드
   //쿼리 스트링으로 나중에 구현해봄이 적절할 듯? 키워드를 아톰으로 관리하는 것 보단??
   const searchKeyword = useRecoilValue(searchKeywordAtom);
-  console.log("검색 키워드", searchKeyword);
 
   //검색키워드와 관련한 게시물이 들어올 배열
   let filteredPost: Post[] = [];
