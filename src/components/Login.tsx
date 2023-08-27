@@ -130,7 +130,7 @@ function Login() {
         </button>
         <button className="login-google" onClick={handleGoogleLogin}>
           <span>구글 로그인</span>
-          <img src="/src/assets/googleLogo.png" alt="구글 로고" />
+          <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/googleLogo.png?raw=true" alt="구글 로고" />
         </button>
       </form>
       <Link to={"/signup"} className="siguUp-link">
