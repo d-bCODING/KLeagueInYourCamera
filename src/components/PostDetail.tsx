@@ -10,7 +10,7 @@ import { isLoginAtom } from "../atoms";
 function PostDetail() {
   const [postData, setPostData] = useState<DocumentData>();
   const [comment, setComment] = useState("");
-  const [rePage, setRePage] = useState(false);
+  const [a, setA] = useState(0);
   const params = useParams();
 
   let nickName = "";
@@ -28,9 +28,9 @@ function PostDetail() {
 
   useEffect(() => {
     getPostData();
-  }, []);
+  }, [a]);
 
-  //
+  //댓글 작성 전 로그인 여부 판별 위함
   const isLogin = useRecoilValue(isLoginAtom);
 
   //댓글 추가하는 함수
@@ -59,11 +59,7 @@ function PostDetail() {
         },
       ],
     });
-    if (rePage) {
-      setRePage(false);
-    } else {
-      setRePage(true);
-    }
+    setA(a+1);
   };
 
   //댓글 input창
