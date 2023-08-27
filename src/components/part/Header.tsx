@@ -33,11 +33,11 @@ function Header() {
   };
 
   const makeBallMoving = () => {
-    setImgSrc("/src/assets/searchBtnMoving.gif");
+    setImgSrc("https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/searchBtnMoving.gif?raw=true");
   };
 
   const makeBallStop = () => {
-    setImgSrc("/src/assets/searchBtnStop.png");
+    setImgSrc("https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/searchBtnStop.png?raw=true");
   };
 
   const setKeyword = useSetRecoilState(searchKeywordAtom);
@@ -59,7 +59,7 @@ function Header() {
     <HeaderDiv>
       <header>
         <Link onClick={resetKeyword} to={"/"} className="main-Logo">
-          <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
+          <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/mainLogo.png?raw=true" alt="메인페이지로 이동" />
         </Link>
         <form action="" className="search-form">
           <input

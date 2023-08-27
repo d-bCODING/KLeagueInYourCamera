@@ -10,7 +10,7 @@ function MyPage() {
   return (
     <MyPageDiv>
       <Link to={"/"} className="main-Logo">
-        <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
+        <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/mainLogo.png?raw=true" alt="메인페이지로 이동" />
       </Link>
       <div className="show-user">
         <img src={`/src/assets/teamLogo/${team}.png`} alt="인천" />

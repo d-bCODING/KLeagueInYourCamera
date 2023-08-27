@@ -82,10 +82,10 @@ function PostDetail() {
             </div>
             <div className="contents">
               <div className="url-contents">
-                {postData.fileURL && postData.fileType.charAt(0) === "i" && (
+                {postData.fileURL !== "none" && postData.fileType.charAt(0) === "i" && (
                   <img src={postData.fileURL}></img>
                 )}
-                {postData.fileURL && postData.fileType.charAt(0) === "v" && (
+                {postData.fileURL !== "none" && postData.fileType.charAt(0) === "v" && (
                   <video muted controls src={postData.fileURL}></video>
                 )}
               </div>
