@@ -10,6 +10,7 @@ import { isLoginAtom } from "../atoms";
 function PostDetail() {
   const [postData, setPostData] = useState<DocumentData>();
   const [comment, setComment] = useState("");
+  const [rePage, setRePage] = useState(false);
   const params = useParams();
 
   let nickName = "";
@@ -58,7 +59,11 @@ function PostDetail() {
         },
       ],
     });
-    navigate(`/postdetail/${params.id}`)
+    if (rePage) {
+      setRePage(false);
+    }else{
+      setRePage(true);
+    }
   };
 
   //댓글 input창
