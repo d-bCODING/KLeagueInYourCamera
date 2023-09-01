@@ -274,19 +274,19 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
                     <i className="heart" onClick={() => doYouLikeThis(el)}>
                       {el.likeUser.some((el) => el === nickName) ? (
                         <img
-                          src="/src/assets/icons/redHeart.png"
+                          src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/redHeart.png?raw=true"
                           alt="좋아요"
                         />
                       ) : (
                         <img
-                          src="/src/assets/icons/emptyHeart.png"
+                          src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/emptyHeart.png?raw=true"
                           alt="좋아요"
                         />
                       )}
                     </i>
                     <i className="comment" onClick={() => goDetailInfo(el)}>
                       <img
-                        src="/src/assets/icons/emptyComment.png"
+                        src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/emptyComment.png?raw=true"
                         alt="댓글"
                       />
                     </i>

@@ -83,11 +83,11 @@ function PostDetail() {
               </div>
               <div className="communicate">
                 <span>
-                  <img src="/src/assets/icons/filledHeart.png" alt="좋아요 수" />
+                  <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/filledHeart.png?raw=true" alt="좋아요 수" />
                   {postData.likeUser.length}
                 </span>
                 <span>
-                  <img src="/src/assets/icons/filledComment.png" alt="댓글 수" />
+                  <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/filledComment.png?raw=true" alt="댓글 수" />
                   {postData.comment.length}
                 </span>
               </div>
