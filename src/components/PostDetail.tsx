@@ -59,7 +59,7 @@ function PostDetail() {
         },
       ],
     });
-    setA(a+1);
+    setA(a + 1);
   };
 
   //댓글 input창
@@ -82,8 +82,14 @@ function PostDetail() {
                 <span className="time">{postData.time}</span>
               </div>
               <div className="communicate">
-                <span>좋아요수</span>
-                <span>댓글수</span>
+                <span>
+                  <img src="/src/assets/icons/filledHeart.png" alt="좋아요 수" />
+                  {postData.likeUser.length}
+                </span>
+                <span>
+                  <img src="/src/assets/icons/filledComment.png" alt="댓글 수" />
+                  {postData.comment.length}
+                </span>
               </div>
             </div>
             <div className="contents">
@@ -159,6 +165,18 @@ const PostDetailDiv = styled.div`
       gap: 20px;
       .time {
         font-size: 12px;
+      }
+    }
+    .communicate {
+      display: flex;
+      gap: 20px;
+      span {
+        display: flex;
+        align-items: center;
+        img {
+          width: 20px;
+          margin-right: 5px;
+        }
       }
     }
   }

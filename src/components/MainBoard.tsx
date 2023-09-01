@@ -3,12 +3,14 @@ import { styled } from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useRecoilValue } from "recoil";
 import { isLoginAtom } from "../atoms";
+import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
+import { db } from "../firebase";
 
 const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
   // function MainBoard() {/
   const [isLoading, setIsLoading] = useState(false);
   //result = 메인 피드에 보일 게시물들
-  const [result, setResult] = useState<Post[] | null>([]);
+  const [result, setResult] = useState<Post[]>([]);
   //글쓰기 전 로그인 여부 확인
   const isLogin = useRecoilValue(isLoginAtom);
   const navigate = useNavigate();
@@ -27,10 +29,12 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
   function getPost() {
     // console.log("내 팀만 보기", onlyMyTeam);
     // console.log("게시물 종류",contentsCondition);
-    
+
     //모든 팀 보기 및 전체 보기
     if (onlyMyTeam === false && contentsCondition === "all") {
-      setResult(props.posts);
+      if (props.posts) {
+        setResult(props.posts);
+      }
       //모든 팀 보기 및 영상, 사진관
     } else if (onlyMyTeam === false && contentsCondition === "isUrl") {
       let urlPost: Post[] = [];
@@ -106,7 +110,6 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
     getPost();
   }
 
-
   //내 팀 보기
   function getMyTeamPost() {
     onlyMyTeam = true;
@@ -130,6 +133,64 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
     contentsCondition = "noUrl";
     getPost();
   }
+
+  //로그인 되어 있는 유저 닉네임 가져오기
+  let nickName = "";
+  const userData = JSON.parse(sessionStorage.getItem("user") || "null");
+  if (userData) {
+    nickName = userData.nickName;
+  }
+
+  //좋아요 버튼 controller
+  const doYouLikeThis = async (el: Post) => {
+    //로그인 한 상태 아니면 로그인 페이지로 보내버림
+    if (nickName === "") {
+      alert("로그인 이후 이용 가능합니다.");
+      navigate("/login");
+      return false;
+    }
+
+    const postRef = doc(db, "post", `${el.docKey}`);
+    const docInfo = await getDoc(postRef);
+    const docData = docInfo.data();
+
+    //이전에 있는 좋아요 표시한 유저들 가져와주고
+    let likeUserArr: string[] = [];
+    likeUserArr = docData?.likeUser;
+
+    //좋아요 누른 적 있는 지 없는지 true, false
+    const isLike = likeUserArr.some((el: string) => el === nickName);
+    console.log(isLike);
+
+    //1. 좋아요를 누른적이 있는 경우 삭제해주기
+    let updatedResult: Post[] = [];
+    if (isLike) {
+      const newUserArr = likeUserArr.filter(
+        (user: string) => user !== nickName
+      );
+      await updateDoc(postRef, {
+        likeUser: newUserArr,
+      });
+      updatedResult = result.map((post) =>
+        post.docKey === el.docKey ? { ...post, likeUser: newUserArr } : post
+      );
+    } else {
+      //2. 좋아요를 누른적이 없는 경우 추가해주기
+      await updateDoc(postRef, {
+        likeUser: [...likeUserArr, nickName],
+      });
+      updatedResult = result.map((post) =>
+        post.docKey === el.docKey ? { ...post, likeUser: [...post.likeUser, nickName] } : post
+      );
+    }
+    //3. 바뀐 정보 result에 넣어서 set해주기(리렌더링)
+    setResult(updatedResult);
+  };
+
+  //상세 페이지 이동 함수(댓글 버튼 클릭시 사용)
+  const goDetailInfo = (el: Post) => {
+    navigate(`/postdetail/${el.docKey}`, { state: el });
+  };
 
   useEffect(() => {
     onlyMyTeam = false;
@@ -155,7 +216,9 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
       </div>
       <div className="post-list-container">
         <div className="list-nav">
-          <button className="all" onClick={getAllTeamPost}>모두 보기</button>
+          <button className="all" onClick={getAllTeamPost}>
+            모두 보기
+          </button>
           <button className="my-team" onClick={getMyTeamPost}>
             내 팀 보기
           </button>
@@ -163,51 +226,74 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
         <ul className="post-list">
           {!isLoading && <span>isLoading</span>}
           {result &&
-            result.map((el) =>
-              el.fileURL === "" ? (
-                <li key={el.time} className="writing post">
-                  <div className="info">
-                    <div className="title-time">
-                      <span className="title">{el.title}</span>
-                      <span className="time">{el.time}</span>
-                    </div>
-                    <p className="author">{el.nickName}</p>
-                    <p
-                      className="description"
-                      dangerouslySetInnerHTML={{ __html: el.contents }}
-                    ></p>
-                    <div className="communication">
-                      <i className="heart">하트</i>
-                      <i className="comment">댓글</i>
-                    </div>
+            result.map((el) => (
+              // el.fileURL === "none" ? (
+              //   <li key={el.time} className="writing post">
+              //     <div className="info">
+              //       <div className="title-time">
+              //         <span className="title">{el.title}</span>
+              //         <span className="time">{el.time}</span>
+              //       </div>
+              //       <p className="author">{el.nickName}</p>
+              //       <p
+              //         className="description"
+              //         dangerouslySetInnerHTML={{ __html: el.contents }}
+              //       ></p>
+              //       <div className="communication">
+              //         <i className="heart">
+              //           <img src={heartSrc} alt="좋아요" />
+              //         </i>
+              //         <i className="comment" onClick={() => goDetailInfo(el)}>
+              //           <img
+              //             src="/src/assets/icons/emptyComment.png"
+              //             alt="댓글"
+              //           />
+              //         </i>
+              //       </div>
+              //     </div>
+              //   </li>
+              // ) :
+              <li key={el.time} className="url post">
+                {el.fileType && el.fileType.charAt(0) === "v" && (
+                  <video muted controls src={el.fileURL}></video>
+                )}
+                {el.fileType && el.fileType.charAt(0) === "i" && (
+                  <img src={el.fileURL}></img>
+                )}
+                <div className="info">
+                  <div className="title-time">
+                    <span className="title">{el.title}</span>
+                    <span className="time">{el.time}</span>
                   </div>
-                </li>
-              ) : (
-                <li key={el.time} className="url post">
-                  {el.fileType && el.fileType.charAt(0) === "v" && (
-                    <video muted controls src={el.fileURL}></video>
-                  )}
-                  {el.fileType && el.fileType.charAt(0) === "i" && (
-                    <img src={el.fileURL}></img>
-                  )}
-                  <div className="info">
-                    <div className="title-time">
-                      <span className="title">{el.title}</span>
-                      <span className="time">{el.time}</span>
-                    </div>
-                    <p className="author">{el.nickName}</p>
-                    <p
-                      className="description"
-                      dangerouslySetInnerHTML={{ __html: el.contents }}
-                    ></p>
-                    <div className="communication">
-                      <i className="heart">하트</i>
-                      <i className="comment">댓글</i>
-                    </div>
+                  <p className="author">{el.nickName}</p>
+                  <p
+                    className="description"
+                    dangerouslySetInnerHTML={{ __html: el.contents }}
+                  ></p>
+                  <div className="communication">
+                    <i className="heart" onClick={() => doYouLikeThis(el)}>
+                      {el.likeUser.some((el) => el === nickName) ? (
+                        <img
+                          src="/src/assets/icons/redHeart.png"
+                          alt="좋아요"
+                        />
+                      ) : (
+                        <img
+                          src="/src/assets/icons/emptyHeart.png"
+                          alt="좋아요"
+                        />
+                      )}
+                    </i>
+                    <i className="comment" onClick={() => goDetailInfo(el)}>
+                      <img
+                        src="/src/assets/icons/emptyComment.png"
+                        alt="댓글"
+                      />
+                    </i>
                   </div>
-                </li>
-              )
-            )}
+                </div>
+              </li>
+            ))}
         </ul>
       </div>
     </MaingBoardDiv>
@@ -328,7 +414,17 @@ const MaingBoardDiv = styled.div`
         .description {
         }
         .communication {
-          margin-top: 40px;
+          display: flex;
+          gap: 10px;
+          height: 20px;
+          margin-top: 20px;
+          i {
+            cursor: pointer;
+            img {
+              width: 24px;
+              margin-bottom: 0;
+            }
+          }
         }
       }
     }

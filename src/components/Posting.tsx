@@ -59,29 +59,29 @@ function Posting() {
             like: 0,
             comment: [],
             likeUser: [],
-            fileType : file?.type,
+            fileType: file?.type,
             fileURL: url,
             time: time,
           });
           navigate("/");
         });
       });
-    }else{
+    } else {
       const today = new Date();
-          const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-          await addDoc(collection(db, "post"), {
-            title: title,
-            contents: contents,
-            team: team,
-            nickName: nickName,
-            view: 0,
-            like: 0,
-            fileURL: "none",
-            comment: [],
-            likeUser: [],
-            time: time,
-          });
-          navigate("/");
+      const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
+      await addDoc(collection(db, "post"), {
+        title: title,
+        contents: contents,
+        team: team,
+        nickName: nickName,
+        view: 0,
+        like: 0,
+        fileURL: "none",
+        comment: [],
+        likeUser: [],
+        time: time,
+      });
+      navigate("/");
     }
   }
 
@@ -120,12 +120,10 @@ function Posting() {
           <ReactQuill
             modules={modules}
             className="inner"
-            onChange={(content, delta, source, editor) =>
-              {
-                console.log(content, delta, source);
-                setContents(editor.getHTML());
-              }
-            }
+            onChange={(content, delta, source, editor) => {
+              console.log(content, delta, source);
+              setContents(editor.getHTML());
+            }}
           ></ReactQuill>
           <div className="button-list">
             <input type="file" onChange={fileHandler} />
@@ -177,7 +175,7 @@ const ForQuillDiv = styled.div`
         border: none;
         box-sizing: border-box;
         padding: 0 20px;
-        &:focus{
+        &:focus {
           outline: none;
         }
       }
