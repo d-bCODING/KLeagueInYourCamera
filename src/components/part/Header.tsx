@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { useRecoilState } from "recoil";
 import { isLoginAtom } from "../../atoms";
@@ -40,9 +40,11 @@ function Header() {
     setImgSrc("https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/searchBtnStop.png?raw=true");
   };
 
+  const navigate = useNavigate();
   const setKeyword = useSetRecoilState(searchKeywordAtom);
   const search = (e: React.FormEvent) => {
     e.preventDefault();
+    navigate("/");
     setKeyword(searchKeyword);
   };
 

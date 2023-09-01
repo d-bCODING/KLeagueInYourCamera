@@ -27,6 +27,7 @@ function Login() {
     team: string;
     nickName: string;
     docId: string;
+    likeList : [],
   };
 
   let userList: User[] = [];
@@ -36,9 +37,9 @@ function Login() {
     const users = await getDocs(collection(db, "account"));
     users.docs.map((doc) => {
       const docId = doc.id;
-      const { email, password, team, nickName } = doc.data();
+      const { email, password, team, nickName, likeList } = doc.data();
       if (Array.isArray(userList)) {
-        userList.push({ email, password, team, nickName, docId });
+        userList.push({ email, password, team, nickName, docId, likeList });
       }
     });
   };
@@ -48,6 +49,8 @@ function Login() {
   //로그인 과정
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(userList);
+    
 
     //회원가입 되어 있는 유저 리스트 가져와서 배열에 담기
     await setUserList();

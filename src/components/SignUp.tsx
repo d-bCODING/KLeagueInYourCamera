@@ -118,6 +118,7 @@ function SignUp() {
     nickName: nickName,
     password: password,
     team: team,
+    likeList : [],
   };
 
   const navigation = useNavigate();

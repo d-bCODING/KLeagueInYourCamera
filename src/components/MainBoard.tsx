@@ -18,7 +18,7 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
     if (isLogin) {
       navigate("/posting");
     } else {
-      alert("로그인을 하셔야 글을 작성할 수 있습니다.");
+      alert("로그인 이후 이용 가능합니다.");
     }
   };
 
@@ -112,6 +112,10 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
 
   //내 팀 보기
   function getMyTeamPost() {
+    if (nickName === "") {
+      alert("로그인 이후 이용 가능합니다.");
+      return false;
+    }
     onlyMyTeam = true;
     getPost();
   }
@@ -146,13 +150,18 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
     //로그인 한 상태 아니면 로그인 페이지로 보내버림
     if (nickName === "") {
       alert("로그인 이후 이용 가능합니다.");
-      navigate("/login");
       return false;
     }
 
+    //게시물 데이터
     const postRef = doc(db, "post", `${el.docKey}`);
     const docInfo = await getDoc(postRef);
     const docData = docInfo.data();
+
+    //유저 데이터
+    const userIdRef = doc(db, "account", `${userData.docId}`);
+    const userInfo = await getDoc(userIdRef);
+    const userData2 = userInfo.data();
 
     //이전에 있는 좋아요 표시한 유저들 가져와주고
     let likeUserArr: string[] = [];
@@ -160,7 +169,6 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
 
     //좋아요 누른 적 있는 지 없는지 true, false
     const isLike = likeUserArr.some((el: string) => el === nickName);
-    console.log(isLike);
 
     //1. 좋아요를 누른적이 있는 경우 삭제해주기
     let updatedResult: Post[] = [];
@@ -174,14 +182,27 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
       updatedResult = result.map((post) =>
         post.docKey === el.docKey ? { ...post, likeUser: newUserArr } : post
       );
+      //1-1 사용자가 좋아요한 목록리스트에서도 삭제
+      const removedArr = userData2?.likeList.filter(
+        (likedEl: string) => likedEl !== el.docKey
+      );
+      await updateDoc(userIdRef, {
+        likeList: removedArr,
+      });
     } else {
       //2. 좋아요를 누른적이 없는 경우 추가해주기
       await updateDoc(postRef, {
         likeUser: [...likeUserArr, nickName],
       });
       updatedResult = result.map((post) =>
-        post.docKey === el.docKey ? { ...post, likeUser: [...post.likeUser, nickName] } : post
+        post.docKey === el.docKey
+          ? { ...post, likeUser: [...post.likeUser, nickName] }
+          : post
       );
+      //2-1 사용자가 좋아요한 목록리스트에도 추가
+      await updateDoc(userIdRef, {
+        likeList: [...userData2?.likeList, el.docKey],
+      });
     }
     //3. 바뀐 정보 result에 넣어서 set해주기(리렌더링)
     setResult(updatedResult);
