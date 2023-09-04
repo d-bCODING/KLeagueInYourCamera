@@ -49,8 +49,6 @@ function Login() {
   //로그인 과정
   const submitHandler = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(userList);
-    
 
     //회원가입 되어 있는 유저 리스트 가져와서 배열에 담기
     await setUserList();

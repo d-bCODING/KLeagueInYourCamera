@@ -23,8 +23,6 @@ function MyLikeList() {
       const postRef = doc(db, "post", el);
       const postData = await getDoc(postRef);
       const postObj = postData.data();
-      console.log(postObj);
-
       const postInfo = {
         postId: el,
         postNum: 0,
@@ -35,8 +33,6 @@ function MyLikeList() {
       };
       likedPostArr = [...likedPostArr, postInfo];
     }
-    console.log(likedPostArr);
-
     // likeList.forEach(async (el: string) => {
     //   const postRef = doc(db, "post", el);
     //   const postData = await getDoc(postRef);

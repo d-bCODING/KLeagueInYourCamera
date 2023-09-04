@@ -91,6 +91,9 @@ function Posting() {
     navigate("/");
   };
 
+  //타입스크립트 오류 방지용
+  let cleanUp = [];
+
   return (
     <>
       <Header></Header>
@@ -121,7 +124,7 @@ function Posting() {
             modules={modules}
             className="inner"
             onChange={(content, delta, source, editor) => {
-              console.log(content, delta, source);
+              cleanUp.push(content, delta, source)
               setContents(editor.getHTML());
             }}
           ></ReactQuill>

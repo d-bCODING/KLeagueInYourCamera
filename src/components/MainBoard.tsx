@@ -27,9 +27,6 @@ const MainBoard: React.FC<{ posts: Post[] | null }> = (props) => {
   let contentsCondition = "all";
   //게시물 가져오는 방식 설정에 따라 게시물 맞춤 렌더링
   function getPost() {
-    // console.log("내 팀만 보기", onlyMyTeam);
-    // console.log("게시물 종류",contentsCondition);
-
     //모든 팀 보기 및 전체 보기
     if (onlyMyTeam === false && contentsCondition === "all") {
       if (props.posts) {
