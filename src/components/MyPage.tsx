@@ -21,7 +21,7 @@ function MyPage() {
           <Link to={"/myinfo"}>회원정보 수정</Link>
         </li>
         <li className="like-post">
-          <Link to={"/"}>좋아요 게시물 보기</Link>
+          <Link to={"/mylikelist"}>좋아요 게시물 보기</Link>
         </li>
         <li className="delete-info">
           <Link to={"/confirm"}>탈퇴하기</Link>

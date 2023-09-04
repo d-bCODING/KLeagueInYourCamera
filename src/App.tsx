@@ -10,6 +10,7 @@ import Posting from "./components/Posting";
 import PostDetail from "./components/PostDetail";
 import SignUpWithGoogle from "./components/SignUpWithGoogle";
 import Confirm from "./components/Confirm";
+import MyLikeList from "./components/MyLikeList";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/signupgoogle" element={<SignUpWithGoogle></SignUpWithGoogle>}></Route>
           <Route path="/mypage" element={<MyPage></MyPage>}></Route>
           <Route path="/myinfo" element={<MyInfo></MyInfo>}></Route>
+          <Route path="/mylikelist" element={<MyLikeList></MyLikeList>}></Route>
           <Route path="/confirm" element={<Confirm></Confirm>}></Route>
           <Route path="/posting" element={<Posting></Posting>}></Route>
           <Route path="/postdetail/:id" element={<PostDetail />} />

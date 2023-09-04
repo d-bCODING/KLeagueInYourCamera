@@ -50,8 +50,6 @@ const SearchedList: React.FC<{ posts: Post[] | null }> = (props) => {
     filteredPost[i].pageNum = pagingNum + plusNum;
   }
 
-  console.log(filteredPost);
-
   //5개씩 보여준다는 전제하에 페이징 갯수 구하기
   let pageNum = 0;
   if (filteredPost.length % 5 > 0) {
