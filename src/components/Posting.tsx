@@ -41,6 +41,16 @@ function Posting() {
   const navigate = useNavigate();
   async function fileUpload(e: React.FormEvent) {
     e.preventDefault();
+    //제목 입력하게 하기
+    if (title.length < 2) {
+      alert("제목을 2글자 이상 입력해주세요.");
+      return;
+    }
+    //내용 입력하게 하기
+    if (contents.length < 1) {
+      alert("내용을 입력해주세요.");
+      return;
+    }
     const storage = getStorage(app);
     const fileRef = ref(storage, `file/${title}${contents}${nickName}`);
     if (file) {
