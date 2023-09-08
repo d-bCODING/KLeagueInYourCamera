@@ -44,7 +44,7 @@ function Header() {
   const setKeyword = useSetRecoilState(searchKeywordAtom);
   const search = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/");
+    navigate("/searchlist");
     setKeyword(searchKeyword);
   };
 

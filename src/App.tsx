@@ -11,6 +11,7 @@ import PostDetail from "./components/PostDetail";
 import SignUpWithGoogle from "./components/SignUpWithGoogle";
 import Confirm from "./components/Confirm";
 import MyLikeList from "./components/MyLikeList";
+import SearchedList from "./components/SearchedList";
 
 function App() {
   return (
@@ -23,6 +24,7 @@ function App() {
           <Route path="/signup" element={<SignUp></SignUp>}></Route>
           <Route path="/signupgoogle" element={<SignUpWithGoogle></SignUpWithGoogle>}></Route>
           <Route path="/mypage" element={<MyPage></MyPage>}></Route>
+          <Route path="/searchlist" element={<SearchedList></SearchedList>}></Route>
           <Route path="/myinfo" element={<MyInfo></MyInfo>}></Route>
           <Route path="/mylikelist" element={<MyLikeList></MyLikeList>}></Route>
           <Route path="/confirm" element={<Confirm></Confirm>}></Route>

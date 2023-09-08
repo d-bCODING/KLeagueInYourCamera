@@ -186,12 +186,12 @@ const PostDetailDiv = styled.div`
     .url-contents {
       display: flex;
       justify-content: center;
-      img,
-      video {
-        margin-bottom: 20px;
-        max-width: 100%;
-        max-height: 400px;
-      }
+    }
+    img,
+    video {
+      margin-bottom: 20px;
+      max-width: 100%;
+      max-height: 400px;
     }
   }
   .comment-wrap {

@@ -118,6 +118,7 @@ function Posting() {
             <input
               placeholder="제목을 입력해주세요"
               onChange={titleHandler}
+              maxLength={20}
             ></input>
           </div>
           <ReactQuill
@@ -224,7 +225,7 @@ const modules = {
       [{ font: [] }],
       [{ align: [] }],
       ["bold", "italic", "underline", "strike", "blockquote"],
-      [{ list: "ordered" }, { list: "bullet" }, "link"],
+      [{ list: "ordered" }, { list: "bullet" }],
       [
         {
           color: [
