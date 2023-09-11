@@ -75,7 +75,15 @@ function PostDetail() {
         {!postData && <span>isLoading</span>}
         {postData && (
           <>
-            <p className="title">{postData.title}</p>
+            <div className="title-controll">
+              <span className="title">{postData.title}</span>
+              {postData.nickName === nickName && 
+                <div className="controll">
+                  <span className="fix">수정</span>
+                  <span className="delete">삭제</span>
+                </div>
+              }
+            </div>
             <div className="title-info">
               <div className="author-time">
                 <span className="nickName">{postData.nickName}</span>
@@ -83,11 +91,17 @@ function PostDetail() {
               </div>
               <div className="communicate">
                 <span>
-                  <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/filledHeart.png?raw=true" alt="좋아요 수" />
+                  <img
+                    src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/filledHeart.png?raw=true"
+                    alt="좋아요 수"
+                  />
                   {postData.likeUser.length}
                 </span>
                 <span>
-                  <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/filledComment.png?raw=true" alt="댓글 수" />
+                  <img
+                    src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/filledComment.png?raw=true"
+                    alt="댓글 수"
+                  />
                   {postData.comment.length}
                 </span>
               </div>
@@ -146,11 +160,25 @@ const PostDetailDiv = styled.div`
   border-radius: 10px;
   text-align: left;
   margin-bottom: 80px;
-  .title {
-    padding-left: 40px;
-    font-size: 18px;
-    font-weight: bold;
-    margin-bottom: 20px;
+  .title-controll{
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    .title {
+      display: inline-block;
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .controll{
+      display: flex;
+      gap: 10px;
+      span{
+        cursor: pointer;
+        color: #9e9e9e;
+        font-weight: bold;
+      }
+    }
   }
   .title-info {
     padding: 10px 40px;
@@ -195,6 +223,7 @@ const PostDetailDiv = styled.div`
     }
   }
   .comment-wrap {
+    border-radius: 0 0 10px 10px;
     padding: 0 40px 10px;
     background-color: #e0e0e0;
     .guide {

@@ -322,7 +322,7 @@ function MainPage() {
                     )}
                     <div className="info">
                       <div className="title-time">
-                        <span className="title">{el.title}</span>
+                        <span className="title" onClick={()=> goDetailInfo(el)} >{el.title}</span>
                         <span className="time">{el.time}</span>
                       </div>
                       <p className="author">{el.nickName}</p>
@@ -462,6 +462,7 @@ const MaingBoardDiv = styled.div`
             font-size: 20px;
             font-weight: bold;
             margin-bottom: 5px;
+            cursor: pointer;
           }
           .time {
             font-size: 14px;
