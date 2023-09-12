@@ -11,9 +11,6 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 function Edit() {
   const location = useLocation();
   const params = useParams();
-  console.log(location.state.title);
-  console.log(params.id);
-  
   
   const [team, setTeam] = useState(location.state.team);
   const [title, setTitle] = useState(location.state.title);

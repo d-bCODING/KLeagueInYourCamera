@@ -45,7 +45,6 @@ function SearchedList() {
     });
     //검색 키워드가 없다면 그냥 그대로 전체 게시물 보여주기
     if (searchKeyword === " ") {
-      console.log(searchKeyword);
       setPosts(allPost);
       return;
     } else {

@@ -72,8 +72,6 @@ function PostDetail() {
   const navigate = useNavigate();
   //게시물 수정(posting으로 보내기)
   const fixPost = async () => {
-    console.log(postData);
-    
     navigate(`/postdetail/${params.id}/edit`, { state: postData });
   }
 
