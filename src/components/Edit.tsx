@@ -71,7 +71,7 @@ function Edit() {
             fileType: file?.type,
             fileURL: url,
           });
-          navigate("/");
+          navigate(`/postdetail/${params.id}`);
         });
       });
     } else {
@@ -81,14 +81,14 @@ function Edit() {
         team: team,
         fileURL: location.state.fileURL,
       });
-      navigate("/");
+      navigate(`/postdetail/${params.id}`);
     }
   }
 
   //게시물 작성 취소하고 나가기
   const cancelPosting = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate("/");
+    navigate(`/postdetail/${params.id}`);
   };
 
   //quill contents 내용 state
