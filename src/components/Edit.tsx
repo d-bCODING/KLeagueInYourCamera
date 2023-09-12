@@ -1,17 +1,23 @@
+import React, { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import React, { useState } from "react";
+import styled from "styled-components";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Header from "./part/Header";
-import { styled } from "styled-components";
 import { db, app } from "../firebase";
-import { addDoc, collection } from "firebase/firestore/lite";
+import { doc, updateDoc } from "firebase/firestore/lite";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useNavigate } from "react-router-dom";
 
-function Posting() {
-  const [team, setTeam] = useState("null");
-  const [title, setTitle] = useState("");
-  const [contents, setContents] = useState("");
+function Edit() {
+  const location = useLocation();
+  const params = useParams();
+  console.log(location.state.title);
+  console.log(params.id);
+  
+  
+  const [team, setTeam] = useState(location.state.team);
+  const [title, setTitle] = useState(location.state.title);
+  const [contents, setContents] = useState(location.state.contents);
   const [file, setFile] = useState<File | null>(null);
 
   //현재 글쓰고 있는 유저의 닉네임 정보 가져오기
@@ -51,44 +57,29 @@ function Posting() {
       return;
     }
     const storage = getStorage(app);
+    const postRef = doc(db, "post", `${params.id}`);
     const fileRef = ref(storage, `file/${title}${contents}${nickName}`);
     if (file) {
       await uploadBytes(fileRef, file).then(async () => {
         await getDownloadURL(
           ref(storage, `file/${title}${contents}${nickName}`)
         ).then(async (url) => {
-          const today = new Date();
-          const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-          await addDoc(collection(db, "post"), {
+          await updateDoc(postRef, {
             title: title,
             contents: contents,
             team: team,
-            nickName: nickName,
-            view: 0,
-            like: 0,
-            comment: [],
-            likeUser: [],
             fileType: file?.type,
             fileURL: url,
-            time: time,
           });
           navigate("/");
         });
       });
     } else {
-      const today = new Date();
-      const time = `${today.toLocaleDateString()} ${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-      await addDoc(collection(db, "post"), {
+      await updateDoc(postRef, {
         title: title,
         contents: contents,
         team: team,
-        nickName: nickName,
-        view: 0,
-        like: 0,
-        fileURL: "none",
-        comment: [],
-        likeUser: [],
-        time: time,
+        fileURL: location.state.fileURL,
       });
       navigate("/");
     }
@@ -100,8 +91,10 @@ function Posting() {
     navigate("/");
   };
 
-  //타입스크립트 오류 방지용
-  let cleanUp = [];
+  //quill contents 내용 state
+  function handleChange(content:string) {
+    setContents(content);
+  }
 
   return (
     <>
@@ -128,15 +121,18 @@ function Posting() {
               placeholder="제목을 입력해주세요"
               onChange={titleHandler}
               maxLength={20}
+              value={location.state.title}
             ></input>
           </div>
           <ReactQuill
             modules={modules}
             className="inner"
-            onChange={(content, delta, source, editor) => {
-              cleanUp.push(content, delta, source)
-              setContents(editor.getHTML());
-            }}
+            defaultValue={`${location.state.contents}`}
+            // onChange={(content, delta, source, editor) => {
+            //   cleanUp.push(content, delta, source);
+            //   setContents(editor.getHTML());
+            // }}
+            onChange={handleChange}
           ></ReactQuill>
           <div className="button-list">
             <input type="file" onChange={fileHandler} />
@@ -155,9 +151,7 @@ function Posting() {
   );
 }
 
-export default Posting;
-
-// ---------------------------------------------------------------------
+export default Edit;
 
 const ForQuillDiv = styled.div`
   form {

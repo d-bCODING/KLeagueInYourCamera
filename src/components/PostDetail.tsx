@@ -1,8 +1,8 @@
 import { styled } from "styled-components";
 import Header from "./part/Header";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../firebase";
-import { DocumentData, doc, getDoc, updateDoc } from "firebase/firestore/lite";
+import { DocumentData, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { isLoginAtom } from "../atoms";
@@ -66,7 +66,24 @@ function PostDetail() {
   const commentHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setComment(e.target.value);
+    
   };
+
+  const navigate = useNavigate();
+  //게시물 수정(posting으로 보내기)
+  const fixPost = async () => {
+    console.log(postData);
+    
+    navigate(`/postdetail/${params.id}/edit`, { state: postData });
+  }
+
+  //게시물 삭제
+  const deletePost = async () => {
+    if (confirm("게시물을 삭제하시겠습니까?")) {
+      await deleteDoc(doc(db, "post", `${params.id}`));
+      navigate("/");
+    }
+  }
 
   return (
     <>
@@ -79,8 +96,8 @@ function PostDetail() {
               <span className="title">{postData.title}</span>
               {postData.nickName === nickName && 
                 <div className="controll">
-                  <span className="fix">수정</span>
-                  <span className="delete">삭제</span>
+                  <span className="fix" onClick={fixPost}>수정</span>
+                  <span className="delete" onClick={deletePost}>삭제</span>
                 </div>
               }
             </div>
