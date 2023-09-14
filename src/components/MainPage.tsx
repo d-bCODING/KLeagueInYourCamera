@@ -136,7 +136,7 @@ function MainPage() {
 
   //내 팀 보기
   function getMyTeamPost() {
-    if (nickName === "") {
+    if (userId === "") {
       alert("로그인 이후 이용 가능합니다.");
       return false;
     }
@@ -163,16 +163,16 @@ function MainPage() {
   }
 
   //로그인 되어 있는 유저 닉네임 가져오기
-  let nickName = "";
+  let userId = "";
   const userData = JSON.parse(sessionStorage.getItem("user") || "null");
   if (userData) {
-    nickName = userData.nickName;
+    userId = userData.docId;
   }
 
   //좋아요 버튼 controller
   const doYouLikeThis = async (el: Post) => {
     //로그인 한 상태 아니면 로그인 페이지로 보내버림
-    if (nickName === "") {
+    if (userId === "") {
       alert("로그인 이후 이용 가능합니다.");
       return false;
     }
@@ -192,13 +192,13 @@ function MainPage() {
     likeUserArr = docData?.likeUser;
 
     //좋아요 누른 적 있는 지 없는지 true, false
-    const isLike = likeUserArr.some((el: string) => el === nickName);
+    const isLike = likeUserArr.some((el: string) => el === userId);
 
     //1. 좋아요를 누른적이 있는 경우 삭제해주기
     let updatedResult: Post[] = [];
     if (isLike) {
       const newUserArr = likeUserArr.filter(
-        (user: string) => user !== nickName
+        (user: string) => user !== userId
       );
       await updateDoc(postRef, {
         likeUser: newUserArr,
@@ -216,11 +216,11 @@ function MainPage() {
     } else {
       //2. 좋아요를 누른적이 없는 경우 추가해주기
       await updateDoc(postRef, {
-        likeUser: [...likeUserArr, nickName],
+        likeUser: [...likeUserArr, userId],
       });
       updatedResult = posts.map((post) =>
         post.docKey === el.docKey
-          ? { ...post, likeUser: [...post.likeUser, nickName] }
+          ? { ...post, likeUser: [...post.likeUser, userId] }
           : post
       );
       //2-1 사용자가 좋아요한 목록리스트에도 추가
@@ -332,7 +332,7 @@ function MainPage() {
                       ></p>
                       <div className="communication">
                         <i className="heart" onClick={() => doYouLikeThis(el)}>
-                          {el.likeUser.some((el) => el === nickName) ? (
+                          {el.likeUser.some((el) => el === userId) ? (
                             <img
                               src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/icons/redHeart.png?raw=true"
                               alt="좋아요"

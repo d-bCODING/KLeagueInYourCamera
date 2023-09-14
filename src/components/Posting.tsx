@@ -15,7 +15,7 @@ function Posting() {
   const [file, setFile] = useState<File | null>(null);
 
   //현재 글쓰고 있는 유저의 닉네임 정보 가져오기
-  const { nickName } = JSON.parse(sessionStorage.getItem("user") || "{}");
+  const { nickName, docId } = JSON.parse(sessionStorage.getItem("user") || "{}");
 
   //게시글의 팀 분류 설정
   const teamHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -64,6 +64,7 @@ function Posting() {
             contents: contents,
             team: team,
             nickName: nickName,
+            userId: docId,
             view: 0,
             like: 0,
             comment: [],
@@ -83,6 +84,7 @@ function Posting() {
         contents: contents,
         team: team,
         nickName: nickName,
+        userId: docId,
         view: 0,
         like: 0,
         fileURL: "none",
@@ -134,7 +136,7 @@ function Posting() {
             modules={modules}
             className="inner"
             onChange={(content, delta, source, editor) => {
-              cleanUp.push(content, delta, source)
+              cleanUp.push(content, delta, source);
               setContents(editor.getHTML());
             }}
           ></ReactQuill>

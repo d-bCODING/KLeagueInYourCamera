@@ -2,7 +2,13 @@ import { styled } from "styled-components";
 import Header from "./part/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../firebase";
-import { DocumentData, doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore/lite";
+import {
+  DocumentData,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+} from "firebase/firestore/lite";
 import { useEffect, useState } from "react";
 import { useRecoilValue } from "recoil";
 import { isLoginAtom } from "../atoms";
@@ -13,16 +19,23 @@ function PostDetail() {
   const [a, setA] = useState(0);
   const params = useParams();
 
-  let nickName = "";
+  let userId = "";
   if (sessionStorage.getItem("user")) {
     const userData = JSON.parse(sessionStorage.getItem("user") || "null");
-    nickName = userData.nickName;
+    userId = userData.docId;
   }
 
   async function getPostData() {
     const postRef = doc(db, "post", `${params.id}`);
     const res = await getDoc(postRef);
     const resData = res.data();
+
+    for (const el of resData?.comment) {
+      const userIdRef = doc(db, "account", `${el.author}`);
+      const userInfo = await getDoc(userIdRef);
+      const userData2 = userInfo.data();
+      el.author = userData2?.nickName;
+    }
     setPostData(resData);
   }
 
@@ -45,16 +58,18 @@ function PostDetail() {
       alert("내용을 입력해주세요");
       return false;
     }
-    const postRef = doc(db, "post", `${params.id}`);
-    let commentArr = [];
     //이전에 있는 댓글들 가져와주고
-    commentArr = postData?.comment;
+    const postRef = doc(db, "post", `${params.id}`);
+    const postInfo = await getDoc(postRef);
+    const postInfo2 = postInfo.data();
+    let commentArr = postInfo2?.comment;
+    
     //업데이트 과정 시작
     await updateDoc(postRef, {
       comment: [
         ...commentArr,
         {
-          author: nickName,
+          author: userId,
           contents: comment,
         },
       ],
@@ -62,18 +77,28 @@ function PostDetail() {
     setA(a + 1);
   };
 
+  //댓글 목록 가져와서 닉네임 알맞게 표시 작업
+  // let commentArr = postData?.comment;
+  // if (commentArr) {
+  //   commentArr.map(async (el) => {
+  //     const userIdRef = doc(db, "account", `${el.author}`);
+  //     const userInfo = await getDoc(userIdRef);
+  //     const userData2 = userInfo.data();
+  //     el.author = userData2?.nickName;
+  //   });
+  // }
+
   //댓글 input창
   const commentHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     setComment(e.target.value);
-    
   };
 
   const navigate = useNavigate();
   //게시물 수정(posting으로 보내기)
   const fixPost = async () => {
     navigate(`/postdetail/${params.id}/edit`, { state: postData });
-  }
+  };
 
   //게시물 삭제
   const deletePost = async () => {
@@ -81,7 +106,7 @@ function PostDetail() {
       await deleteDoc(doc(db, "post", `${params.id}`));
       navigate("/");
     }
-  }
+  };
 
   return (
     <>
@@ -92,12 +117,16 @@ function PostDetail() {
           <>
             <div className="title-controll">
               <span className="title">{postData.title}</span>
-              {postData.nickName === nickName && 
+              {postData.userId === userId && (
                 <div className="controll">
-                  <span className="fix" onClick={fixPost}>수정</span>
-                  <span className="delete" onClick={deletePost}>삭제</span>
+                  <span className="fix" onClick={fixPost}>
+                    수정
+                  </span>
+                  <span className="delete" onClick={deletePost}>
+                    삭제
+                  </span>
                 </div>
-              }
+              )}
             </div>
             <div className="title-info">
               <div className="author-time">
@@ -167,15 +196,12 @@ export default PostDetail;
 const PostDetailDiv = styled.div`
   color: black;
   background-color: white;
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
   width: 1000px;
+  margin: 0 auto 40px;
   padding: 20px 0 0;
   border-radius: 10px;
   text-align: left;
-  margin-bottom: 80px;
-  .title-controll{
+  .title-controll {
     display: flex;
     justify-content: space-between;
     padding: 0 40px;
@@ -185,10 +211,10 @@ const PostDetailDiv = styled.div`
       font-weight: bold;
       margin-bottom: 20px;
     }
-    .controll{
+    .controll {
       display: flex;
       gap: 10px;
-      span{
+      span {
         cursor: pointer;
         color: #9e9e9e;
         font-weight: bold;
@@ -264,6 +290,9 @@ const PostDetailDiv = styled.div`
         box-sizing: border-box;
         border-radius: 6px 0 0 6px;
         padding-left: 10px;
+        &:focus {
+          outline: none;
+        }
       }
       button {
         width: 6%;

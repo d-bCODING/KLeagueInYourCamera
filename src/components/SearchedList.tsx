@@ -11,14 +11,14 @@ import { db } from "../firebase";
 function SearchedList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [showedPageNum, setShowedPageNum] = useState<Number>(1);
-
+  const searchKeyword = useRecoilValue(searchKeywordAtom);
+  
   useEffect(() => {
     getAllPost();
-  }, []);
+  }, [searchKeyword]);
 
   //사용자가 입력한 검색 키워드
   //쿼리 스트링으로 나중에 구현해봄이 적절할 듯? 키워드를 아톰으로 관리하는 것 보단??
-  const searchKeyword = useRecoilValue(searchKeywordAtom);
 
   //게시물 데이터 가져오기
   async function getAllPost() {

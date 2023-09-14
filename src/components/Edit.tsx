@@ -118,7 +118,7 @@ function Edit() {
               placeholder="제목을 입력해주세요"
               onChange={titleHandler}
               maxLength={20}
-              value={location.state.title}
+              defaultValue={location.state.title}
             ></input>
           </div>
           <ReactQuill
