@@ -20,16 +20,17 @@ function PostDetail() {
   const params = useParams();
 
   let userId = "";
+  let nickName = "";
   if (sessionStorage.getItem("user")) {
     const userData = JSON.parse(sessionStorage.getItem("user") || "null");
     userId = userData.docId;
+    nickName = userData.nickName;
   }
 
   async function getPostData() {
     const postRef = doc(db, "post", `${params.id}`);
     const res = await getDoc(postRef);
     const resData = res.data();
-
     for (const el of resData?.comment) {
       const userIdRef = doc(db, "account", `${el.author}`);
       const userInfo = await getDoc(userIdRef);
@@ -63,7 +64,7 @@ function PostDetail() {
     const postInfo = await getDoc(postRef);
     const postInfo2 = postInfo.data();
     let commentArr = postInfo2?.comment;
-    
+
     //업데이트 과정 시작
     await updateDoc(postRef, {
       comment: [
@@ -76,17 +77,6 @@ function PostDetail() {
     });
     setA(a + 1);
   };
-
-  //댓글 목록 가져와서 닉네임 알맞게 표시 작업
-  // let commentArr = postData?.comment;
-  // if (commentArr) {
-  //   commentArr.map(async (el) => {
-  //     const userIdRef = doc(db, "account", `${el.author}`);
-  //     const userInfo = await getDoc(userIdRef);
-  //     const userData2 = userInfo.data();
-  //     el.author = userData2?.nickName;
-  //   });
-  // }
 
   //댓글 input창
   const commentHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,6 +96,29 @@ function PostDetail() {
       await deleteDoc(doc(db, "post", `${params.id}`));
       navigate("/");
     }
+  };
+
+  //댓글 수정창으로 이동
+  const goToEdit = (index:number, comment:string) => {
+    navigate(`/postdetail/${params.id}/commentedit`, { state: {index, comment} });
+  }
+
+  //댓글 삭제
+  const deleteComment = async (index: number) => {
+    if (confirm("댓글을 삭제하시겠습니까?")) {
+      //이전 댓글 목록 가져오고
+      const postRef = doc(db, "post", `${params.id}`);
+      const postInfo = await getDoc(postRef);
+      const postInfo2 = postInfo.data();
+      let commentArr = postInfo2?.comment;
+      //이 중 index 번호와 같은 댓글 삭제
+      commentArr.splice(index, 1);
+      //이후 업데이트
+      await updateDoc(postRef, {
+        comment: commentArr
+      });
+    }
+    setA(a + 1);
   };
 
   return (
@@ -170,12 +183,26 @@ function PostDetail() {
               <p className="guide">댓글 {postData.comment.length}개</p>
               {postData.comment.map((el: Comment, index: number) => (
                 <div key={index} className="comment">
-                  <span className="comment-author">{el.author}</span>
-                  <span className="comment-contents">{el.contents}</span>
+                  <div className="comment-info">
+                    <span className="comment-author">{el.author}</span>
+                    <span className="comment-contents">{el.contents}</span>
+                  </div>
+                  {el.author === nickName && (
+                    <div className="comment-controll">
+                      <span className="comment-fix" onClick={() => goToEdit(index, el.contents)}>수정</span>
+                      <span
+                        className="comment-delete"
+                        onClick={() => deleteComment(index)}
+                      >
+                        삭제
+                      </span>
+                    </div>
+                  )}
                 </div>
               ))}
               <form className="comment-form" action="">
                 <input
+                  defaultValue={""}
                   className="write-comment"
                   type="text"
                   placeholder="댓글 작성"
@@ -251,7 +278,7 @@ const PostDetailDiv = styled.div`
   }
   .contents {
     padding: 0 40px 20px;
-    min-height: 400px;
+    min-height: 350px;
     .url-contents {
       display: flex;
       justify-content: center;
@@ -260,7 +287,7 @@ const PostDetailDiv = styled.div`
     video {
       margin-bottom: 20px;
       max-width: 100%;
-      max-height: 400px;
+      max-height: 350px;
     }
   }
   .comment-wrap {
@@ -273,11 +300,22 @@ const PostDetailDiv = styled.div`
       padding: 10px 0;
     }
     .comment {
+      display: flex;
+      justify-content: space-between;
       padding: 10px 0 0;
       .comment-author {
         display: inline-block;
         font-weight: bold;
         margin-right: 10px;
+      }
+      .comment-controll {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        span {
+          cursor: pointer;
+        }
       }
     }
     .comment-form {
@@ -298,6 +336,7 @@ const PostDetailDiv = styled.div`
         width: 6%;
         border-radius: 0 6px 6px 0;
         border: none;
+        cursor: pointer;
       }
     }
   }

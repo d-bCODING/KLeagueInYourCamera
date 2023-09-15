@@ -13,6 +13,7 @@ import Confirm from "./components/Confirm";
 import MyLikeList from "./components/MyLikeList";
 import SearchedList from "./components/SearchedList";
 import Edit from "./components/Edit";
+import CommentEdit from "./components/CommentEdit";
 
 function App() {
   return (
@@ -30,8 +31,9 @@ function App() {
           <Route path="/mylikelist" element={<MyLikeList></MyLikeList>}></Route>
           <Route path="/confirm" element={<Confirm></Confirm>}></Route>
           <Route path="/posting" element={<Posting></Posting>}></Route>
-          <Route path="/postdetail/:id" element={<PostDetail />} />
-          <Route path="/postdetail/:id/edit" element={<Edit />} />
+          <Route path="/postdetail/:id" element={<PostDetail></PostDetail>} />
+          <Route path="/postdetail/:id/edit" element={<Edit></Edit>} />
+          <Route path="/postdetail/:id/commentedit" element={<CommentEdit></CommentEdit>}/>
         </Routes>
       </BrowserRouter>
     </>
