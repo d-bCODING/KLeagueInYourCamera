@@ -72,7 +72,9 @@ const CommentEditDiv = styled.div`
     border: none;
     padding: 10px;
     margin-bottom: 20px;
+    transition: 100ms;
     &:focus {
+      background-color: #ffffcc;
       outline: none;
     }
   }
