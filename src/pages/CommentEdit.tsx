@@ -1,5 +1,5 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import Header from "./part/Header";
+import Header from "../components/Header";
 import styled from "styled-components";
 import { useState } from "react";
 import { doc, getDoc, updateDoc } from "firebase/firestore/lite";
@@ -21,7 +21,7 @@ function CommentEdit() {
     const postRef = doc(db, "post", `${params.id}`);
     const postInfo = await getDoc(postRef);
     const postInfo2 = postInfo.data();
-    let commentArr = postInfo2?.comment;
+    const commentArr = postInfo2?.comment;
     //수정
     commentArr[location.state.index].contents = comment;
     //이후 업데이트

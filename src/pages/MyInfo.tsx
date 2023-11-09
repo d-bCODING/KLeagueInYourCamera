@@ -43,7 +43,7 @@ function MyInfo() {
     e.preventDefault();
 
     //닉네임만 가져와서 배열에 저장해놓기
-    let nickNameList: String[] = [];
+    let nickNameList: string[] = [];
     const users = await getDocs(collection(db, "account"));
     users.docs.forEach((el) => {
       nickNameList = [...nickNameList, el.data().nickName];
@@ -94,7 +94,7 @@ function MyInfo() {
         team: team,
         password: password,
         docId: userId,
-        email : userEmail,
+        email: userEmail,
       })
     );
     navigate("/mypage");
@@ -102,10 +102,13 @@ function MyInfo() {
   return (
     <MyInfoDiv>
       <Link to={"/"} className="main-Logo">
-        <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/mainLogo.png?raw=true" alt="메인페이지로 이동" />
+        <img
+          src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/mainLogo.png?raw=true"
+          alt="메인페이지로 이동"
+        />
       </Link>
       <div className="show-user">
-      {userTeam ? (
+        {userTeam ? (
           <img
             src={`https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/teamLogo/${team}.png?raw=true`}
             alt="유저 팀 로고"

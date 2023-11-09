@@ -30,7 +30,7 @@ function Login() {
     likeList : [],
   };
 
-  let userList: User[] = [];
+  const userList: User[] = [];
 
   //회원가입 되어 있는 유저 리스트 가져오는 함수 선언
   const setUserList = async () => {

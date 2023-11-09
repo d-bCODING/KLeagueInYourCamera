@@ -1,4 +1,4 @@
-import Header from "./part/Header";
+import Header from "../components/Header";
 import { useRecoilValue } from "recoil";
 // import { searchKeywordAtom } from "../atoms";
 // import MainBoard from "./MainBoard";

@@ -1,19 +1,19 @@
 import { Reset } from "styled-reset";
 import "./App.css";
-import MainPage from "./components/MainPage";
-import SignUp from "./components/SignUp";
-import Login from "./components/Login";
-import MyPage from "./components/MyPage";
-import MyInfo from "./components/MyInfo";
+import MainPage from "./pages/MainPage";
+import SignUp from "./pages/SignUp";
+import Login from "./pages/Login";
+import MyPage from "./pages/MyPage";
+import MyInfo from "./pages/MyInfo";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Posting from "./components/Posting";
-import PostDetail from "./components/PostDetail";
-import SignUpWithGoogle from "./components/SignUpWithGoogle";
-import Confirm from "./components/Confirm";
-import MyLikeList from "./components/MyLikeList";
-import SearchedList from "./components/SearchedList";
-import Edit from "./components/Edit";
-import CommentEdit from "./components/CommentEdit";
+import Posting from "./pages/Posting";
+import PostDetail from "./pages/PostDetail";
+import SignUpWithGoogle from "./pages/SignUpWithGoogle";
+import Confirm from "./pages/Confirm";
+import MyLikeList from "./pages/MyLikeList";
+import SearchedList from "./pages/SearchedList";
+import Edit from "./pages/Edit";
+import CommentEdit from "./pages/CommentEdit";
 
 function App() {
   return (

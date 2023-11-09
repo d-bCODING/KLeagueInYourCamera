@@ -1,85 +1,66 @@
 import { useState, useEffect } from "react";
-import { useRecoilValue } from "recoil";
-import { searchKeywordAtom } from "../atoms";
+import Header from "../components/Header";
 import { styled } from "styled-components";
-import { useNavigate } from "react-router-dom";
-import Header from "./part/Header";
-import { getDocs, collection } from "firebase/firestore/lite";
+import { doc, getDoc } from "firebase/firestore/lite";
 import { db } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
-// const SearchedList: React.FC<{ posts: Post[] | null }> = (props) => {
-function SearchedList() {
+function MyLikeList() {
+  const [showedPageNum, setShowedPageNum] = useState<number>(1);
   const [posts, setPosts] = useState<Post[]>([]);
-  const [showedPageNum, setShowedPageNum] = useState<Number>(1);
-  const searchKeyword = useRecoilValue(searchKeywordAtom);
-  
-  useEffect(() => {
-    getAllPost();
-  }, [searchKeyword]);
+  const { docId: userId } = JSON.parse(
+    sessionStorage.getItem("user") || "null"
+  );
 
-  //사용자가 입력한 검색 키워드
-  //쿼리 스트링으로 나중에 구현해봄이 적절할 듯? 키워드를 아톰으로 관리하는 것 보단??
+  const userLikeList = async () => {
+    let likedPostArr: Post[] = [];
+    const userRef = doc(db, "account", userId);
+    const userData = await getDoc(userRef);
+    const userObj = userData.data();
+    const likeList = userObj?.likeList;
 
-  //게시물 데이터 가져오기
-  async function getAllPost() {
-    let allPost: Post[] = [];
-    const posts = await getDocs(collection(db, "post"));
-    posts.forEach((el) => {
-      const data = el.data();
-      const docKey = el.id;
-      const post: Post = {
-        comment: data.comment,
-        contents: data.contents,
-        like: data.like,
-        likeUser: data.likeUser,
-        nickName: data.nickName,
-        team: data.team,
-        title: data.title,
-        fileURL: data.fileURL,
-        fileType: data.fileType,
-        view: data.view,
-        time: data.time,
-        docKey: docKey,
+    for (const el of likeList) {
+      const postRef = doc(db, "post", el);
+      const postData = await getDoc(postRef);
+      const postObj = postData.data();
+      const postInfo = {
+        postId: el,
+        postNum: 0,
+        pageNum: 0,
+        postTime: postObj?.time,
+        postTitle: postObj?.title,
+        postAuthor: postObj?.nickName,
       };
-      allPost = [post, ...allPost];
-    });
-    //검색 키워드가 없다면 그냥 그대로 전체 게시물 보여주기
-    if (searchKeyword === " ") {
-      setPosts(allPost);
-      return;
-    } else {
-      //검색키워드와 관련한 게시물이 들어올 배열
-      let filteredPost: Post[] = [];
-      //게시물들 하나하나씩 뜯어보는 과정
-      allPost.forEach((el) => {
-        //제목이나 내용에 검색 키워드가 포함되어 있을 경우에만 filteredPost에 포함
-        if (
-          el.title.indexOf(searchKeyword) !== -1 ||
-          el.contents.indexOf(searchKeyword) !== -1
-        ) {
-          filteredPost = [el, ...filteredPost];
-        } else if (searchKeyword === " ") {
-          filteredPost = [el, ...filteredPost];
-        }
-      });
-      setPosts(filteredPost);
+      likedPostArr = [...likedPostArr, postInfo];
     }
-  }
+    // likeList.forEach(async (el: string) => {
+    //   const postRef = doc(db, "post", el);
+    //   const postData = await getDoc(postRef);
+    //   const postObj = postData.data();
+    //   const postInfo = {
+    //     postId: el,
+    //     postTitle: postObj?.contents,
+    //     postAuthor: postObj?.nickName,
+    //   };
+    //   likedPostArr = [...likedPostArr, postInfo];
+    // })
+    setPosts(likedPostArr);
+  };
 
   //시간 순으로 정렬 후, 가장 오래된 것부터 번호 부여.
   const sortedAllPost = posts.sort(
     (a, b) =>
-      new Date(b.time as string).getTime() -
-      new Date(a.time as string).getTime()
+      new Date(b.postTime as string).getTime() -
+      new Date(a.postTime as string).getTime()
   );
   let count = sortedAllPost.length;
   sortedAllPost.map((el) => {
-    el.num = count;
+    el.postNum = count;
     count--;
   });
 
   //각 게시물에게 맞는 페이징 번호 부여.
-  let pagingNum = 1;
+  const pagingNum = 1;
   let plusNum = 0;
   for (let i = 0; i < sortedAllPost.length; i++) {
     plusNum = Math.floor(i / 5);
@@ -95,53 +76,50 @@ function SearchedList() {
   }
 
   //return 문에서 페이징 번호 만들 때 쓸 배열 만들기
-  let forMakePaging: Number[] = [];
+  const forMakePaging: number[] = [];
   for (let i = 0; i < pageNum; i++) {
     forMakePaging.push(i + 1);
   }
 
+  //상세페이지 이동 함수
+  const navigate = useNavigate();
+  const goDetailInfo = (el: Post) => {
+    navigate(`/postdetail/${el.postId}`, { state: el });
+  };
+
   //보고싶은 페이지 선택
-  const showPage = (num: Number) => {
+  const showPage = (num: number) => {
     setShowedPageNum(num);
   };
 
   //페이지에 맞는 번호 보유하고 있는 게시물들만 가져오기
-  const resultPosts = sortedAllPost.filter(
+  const resultPosts = posts.filter(
     (obj) => obj.pageNum === showedPageNum
   );
 
-  //상세페이지 이동 함수
-  const navigate = useNavigate();
-  const goDetailInfo = (el: Post) => {
-    navigate(`/postdetail/${el.docKey}`, { state: el });
-  };
+  useEffect(() => {
+    userLikeList();
+  }, []);
 
   return (
     <>
       <Header></Header>
       <SearchListDiv>
-        <div className="welcome">
-          {searchKeyword === " " ? (
-            <span className="keyword">전체검색 결과입니다.</span>
-          ) : (
-            <span className="keyword">{`'${searchKeyword}'`} 에 대한 검색 결과입니다.</span>
-          )}
-        </div>
         <ul className="post-list">
           {resultPosts.map((el) => (
             <li
               onClick={() => goDetailInfo(el)}
-              key={el.num}
+              key={el.postId}
               className="writing post"
             >
               <div className="info">
                 <div className="front">
-                  <span className="num">{el.num}</span>
-                  <span className="title">{el.title}</span>
+                  <span className="num">{el.postNum}</span>
+                  <span className="title">{el.postTitle}</span>
                 </div>
                 <div className="back">
                   <span className="author">작성자</span>
-                  <span className="nickName">{el.nickName}</span>
+                  <span className="nickName">{el.postAuthor}</span>
                 </div>
               </div>
             </li>
@@ -162,7 +140,7 @@ function SearchedList() {
   );
 }
 
-export default SearchedList;
+export default MyLikeList;
 
 const SearchListDiv = styled.div`
   display: flex;
@@ -232,19 +210,10 @@ const SearchListDiv = styled.div`
 `;
 
 type Post = {
-  comment: string[];
-  contents: string;
-  like: number;
-  likeUser: string[];
-  nickName: string;
-  team: string;
-  title: string;
-  fileURL: string;
-  view: number;
-  time: string;
-  num?: number;
-  pageNum?: number;
-  postId?: number;
-  fileType: string;
-  docKey: string;
+  postId: string;
+  postTime: string;
+  postTitle: string;
+  postAuthor: string;
+  postNum: number;
+  pageNum: number;
 };

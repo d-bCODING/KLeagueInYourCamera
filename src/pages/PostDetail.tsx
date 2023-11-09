@@ -1,5 +1,5 @@
 import { styled } from "styled-components";
-import Header from "./part/Header";
+import Header from "../components/Header";
 import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../firebase";
 import {
@@ -63,7 +63,7 @@ function PostDetail() {
     const postRef = doc(db, "post", `${params.id}`);
     const postInfo = await getDoc(postRef);
     const postInfo2 = postInfo.data();
-    let commentArr = postInfo2?.comment;
+    const commentArr = postInfo2?.comment;
 
     //업데이트 과정 시작
     await updateDoc(postRef, {
@@ -110,7 +110,7 @@ function PostDetail() {
       const postRef = doc(db, "post", `${params.id}`);
       const postInfo = await getDoc(postRef);
       const postInfo2 = postInfo.data();
-      let commentArr = postInfo2?.comment;
+      const commentArr = postInfo2?.comment;
       //이 중 index 번호와 같은 댓글 삭제
       commentArr.splice(index, 1);
       //이후 업데이트

@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { styled } from "styled-components";
 import { useRecoilState } from "recoil";
-import { isLoginAtom } from "../../atoms";
+import { isLoginAtom } from "../atoms";
 import { useSetRecoilState } from "recoil";
-import { searchKeywordAtom } from "../../atoms";
+import { searchKeywordAtom } from "../atoms";
 
 function Header() {
   // const user = JSON.parse(sessionStorage.getItem("user") || "null");/
