@@ -1,6 +1,9 @@
 # FE - React + TypeScript + Vite
 # BE - Firebase (Firestore + Authentication + Storage)
 
+### 링크 (Vercel 배포)
+https://k-league-in-your-camera-g547.vercel.app/
+
 ### 🖥️ 개인 프로젝트 소개
 
 K리그 축구팬들은 K리그 공식 계정에서 올라오는 각 경기별 하이라이트 영상도 찾아보지만, 또 K리그팬들이 찍은 이른바 '직캠'이라 불리는 영상들을 찾아보기도 합니다.
