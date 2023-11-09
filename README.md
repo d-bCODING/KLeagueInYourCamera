@@ -1,4 +1,5 @@
-# React + TypeScript + Vite
+# FE - React + TypeScript + Vite
+# BE - Firebase (Firestore Database + Authentication)
 
 ### 🖥️ 개인 프로젝트 소개
 
