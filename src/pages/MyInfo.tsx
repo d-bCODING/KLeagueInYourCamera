@@ -110,7 +110,7 @@ function MyInfo() {
       <div className="show-user">
         {userTeam ? (
           <img
-            src={`https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/teamLogo/${team}.png?raw=true`}
+            src={`https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/teamLogo/${userTeam}.png?raw=true`}
             alt="유저 팀 로고"
           />
         ) : (
