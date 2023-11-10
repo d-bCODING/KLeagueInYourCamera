@@ -1,27 +1,44 @@
-# React + TypeScript + Vite
+# FE - React + TypeScript + Vite
+# BE - Firebase (Firestore + Authentication + Storage)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 링크 (Vercel 배포)
+https://k-league-in-your-camera-g547.vercel.app/
 
-Currently, two official plugins are available:
+### 🖥️ 개인 프로젝트 소개
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+K리그 축구팬들은 K리그 공식 계정에서 올라오는 각 경기별 하이라이트 영상도 찾아보지만, 또 K리그팬들이 찍은 이른바 '직캠'이라 불리는 영상들을 찾아보기도 합니다.
 
-## Expanding the ESLint configuration
+하여 K리그 팬들이 서로 자신이 찍은 '직캠'을 공유하고 이에 대해 소통하는 플랫폼을 만들어보자! 라는 취지에서 진행하게된 프로젝트, KLeagueInYourCamera 입니다.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 🕰️ 개발기간
 
-- Configure the top-level `parserOptions` property like this:
+23.7.31 ~ 23.08.25
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+### 📌 주요 기능
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## 로그인 
+- DB를 통한 검증
+- 구글 계정을 통한 로그인
+- 로그인시 세션값에 값 생성
+
+## 회원가입
+- 닉네임,  이메일 중복 검증
+- 구글 계정을 통한 회원가
+
+## 마이페이지
+- 회원정보 수정
+- 좋아요 게시물 보기
+- 탈퇴하기
+
+## 글쓰기
+- 글을 포함한 게시글 작성
+- 이미지, 동영상을 포함한 게시글 작성
+- (추후 수정, 삭제 가능)
+
+## 커뮤니티
+- 좋아요
+- 댓글 (추후 수정, 삭제 가능)
+
+## 메인페이지
+- 릴스 형태의 게시물 나열
+- 영상,사진 포함 게시물과 일반 글 게시물 필터 기능
