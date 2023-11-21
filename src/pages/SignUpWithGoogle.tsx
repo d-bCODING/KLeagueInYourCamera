@@ -44,7 +44,7 @@ function SignUpWithGoogle() {
       email: string;
     };
 
-    let userList: User[] = [];
+    const userList: User[] = [];
 
     //회원가입 되어 있는 계정들의 닉네임과 이메일 가져오기
     const users = await getDocs(collection(db, "account"));
@@ -85,7 +85,7 @@ function SignUpWithGoogle() {
   };
 
   //회원가입 될 유저 정보
-  let newUser = {
+  const newUser = {
     email: location.state,
     imagae: "url",
     nickName: nickName,
@@ -114,7 +114,7 @@ function SignUpWithGoogle() {
   return (
     <SignUpDiv className="inner">
       <Link to={"/"} className="main-Logo">
-        <img src="/src/assets/mainLogo.png" alt="메인페이지로 이동" />
+        <img src="https://github.com/d-bCODING/KLeagueInYourCamera/blob/master/src/assets/mainLogo.png?raw=true" alt="메인페이지로 이동" />
       </Link>
       <form action="" className="signUp-form">
         <ul className="input-list">
